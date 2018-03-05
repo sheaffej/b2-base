@@ -34,23 +34,9 @@ class IRSensors:
         max_adc_val = rospy.get_param("~max_adc_val", DEFAULT_MAX_ADC_VAL)
         proximity_dist = rospy.get_param("~proximity_distance", DEFAULT_PROXIMITY_DIST)
 
-        # # Calculated constants for interpreting the sensor output
-        # v_per_adc = vref / float(max_adc - min_adc)
+        # Calculate the ADC value when an object is in "proximity"
         v_per_adc = self._volts_per_adc(vref, min_adc_val, max_adc_val)
         rospy.logdebug("v_per_adc: {}".format(v_per_adc))
-
-        # prox_dist_cm = proximity_dist * 100
-        # rospy.logdebug("prox_dist_cm: {}".format(prox_dist_cm))
-
-        # # This function is the result of fitting the Voltage/Distance curve points in the
-        # # Sharp GP2Y0A60SZXF data sheet https://www.pololu.com/file/0J812/gp2y0a60szxf_e.pdf
-        # # using the site http://mycurvefit.com
-        # # The function takes in distance in cm, and outputs the voltage of the IR sensor's output
-        # # v_at_prox_dist = 0.5955366 + 6.8125134 / (1 + (prox_dist_cm / 8.798111) ** 1.624654)
-
-        # v_at_prox_dist = self._volts_at_cm_distance(prox_dist_cm)
-
-        # self._acd_at_prox_dist = int(v_at_prox_dist / v_per_adc)
         self._acd_at_prox_dist = self._adc_at_proximity_dist(proximity_dist, v_per_adc)
         rospy.logdebug("acd_at_prox_dist: {}".format(self._acd_at_prox_dist))
 
@@ -93,15 +79,15 @@ class IRSensors:
         except rospy.ROSInterruptException:
             rospy.logwarn("ROSInterruptException received in main loop")
 
+    def _volts_per_adc(self, vref, min_adc_reading, max_adc_reading):
+        return vref / float(max_adc_reading - min_adc_reading)
+
     def _volts_at_cm_distance(self, dist_cm):
         # This function is the result of fitting the Voltage/Distance curve points in the
         # Sharp GP2Y0A60SZXF data sheet https://www.pololu.com/file/0J812/gp2y0a60szxf_e.pdf
         # using the site http://mycurvefit.com
         # The function takes in distance in cm, and outputs the voltage of the IR sensor's output
         return 0.5955366 + 6.8125134 / (1 + (dist_cm / 8.798111) ** 1.624654)
-
-    def _volts_per_adc(self, vref, min_adc_reading, max_adc_reading):
-        return vref / float(max_adc_reading - min_adc_reading)
 
     def _adc_at_proximity_dist(self, prox_dist_m, v_per_adc):
         prox_dist_cm = prox_dist_m * 100
