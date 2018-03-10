@@ -37,11 +37,11 @@ Once I could control the Roboclaw as a ROS node, I moved on to creating a basic 
 
 The teleop_node was very straight forward. 
 
-However the base_node required me to learn a bunch about robot kinematics, some linear algebra, and do a hard refresh of trigonmetry.
+However the base_node required me to learn a bunch about robot kinematics, some linear algebra, and do a refresh of trigonmetry.
 
 ### Leaning Kinematics, Linear Algebra, and Odometry
 
-Some pages that helped me understand Kinematics, linear algebra, and Odometry calculations:
+Below are some pages that helped me understand Kinematics, linear algebra, and Odometry calculations.
 
 This paper by Columbia University helped me understand the theorectical math of Forward and Inverse Kinematics. This introduced me to several terms that I would need to use, but the math here was too far removed from my scenario, so I used different equations.
 
@@ -57,7 +57,7 @@ I found this page succinct but clear. It filled in a lot of gaps for me, specifi
 
 * [http://robotsforroboticists.com/drive-kinematics/](http://robotsforroboticists.com/drive-kinematics/)
 
-Ultimately, to understand how to calculate odometry, I needed to learn some linear algebra. In both of my undergraduate and masters degrees, I managed to avoid linear algebra, so I had to learn it now. I will say, however, that having a real-world problem to solve when learning math makes a HUGE difference. For me, trying to learn theoretical math without any context or problem to solve was really hard. But having an odometry problem to solve, and these really great videos, I learned what I needed about linear algebra in one evening (up to video #6 which deals with 3D transformations).
+Ultimately, to understand how to calculate odometry, I needed to learn some linear algebra. In both of my undergraduate and masters degrees, I managed to avoid linear algebra, so I had to learn it now. I will say, that having a real-world problem to solve when learning math makes a HUGE difference. Having an odometry problem to solve, and these really great videos, I was able to learn what I needed about linear algebra pretty quickly. I only needed to watch up to video #6 which deals with 3D transformations.
 
 * [YouTube playlist: Essence of linear algebra](https://www.youtube.com/playlist?list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab)
 
