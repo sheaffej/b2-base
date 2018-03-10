@@ -12,7 +12,6 @@ class TestIRSensors(unittest.TestCase):
 
     def __init__(self, *args):
         super(TestIRSensors, self).__init__(*args)
-        # self.ir_sensors = b2_base.sensors_node.IRSensors('ir_sensors_test')
 
     def test_volts_per_adc(self):
         # (vref, min_adc_reading, max_adc_reading, expected)

@@ -107,7 +107,7 @@ generate_messages(
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES b2_base
- CATKIN_DEPENDS geometry_msgs rospy std_msgs message_generation
+ # CATKIN_DEPENDS geometry_msgs rospy std_msgs message_generation
 #  DEPENDS system_lib
 )
 
@@ -199,6 +199,7 @@ include_directories(
 
 ## Add folders to be run by python nosetests
 catkin_add_nosetests(tests/test_ir_sensors_unit.py)
+catkin_add_nosetests(tests/test_base_unit.py)
 
 # Node-level tests
 # if(CATKIN_ENABLE_TESTING)
