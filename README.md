@@ -9,8 +9,12 @@ This is my ROS project consisting of the custom code for my robot named **B2**.
 
 B2 is a 2-wheel differential drive robot. It's initial design goal is to create a Hide & Seek robot that will roam a single floor in a multi-room house looking for a person hiding. This goal was suggested by my elementary school age kids when I was searching for a goal for which to build a robot from scratch.
 
+### The Initial Design
+
 First, I modeled the robot in Fusion 360:
 ![](docs/b2_design_v1.png)
+
+### Buiding the Drive Base
 
 Then I built the lower level which contained the drive system. I source parts from Pololu, Mouser, Amazon.com, and the local Ace Hardware store.
 
@@ -23,6 +27,7 @@ Some pages that helped me understand PID Controllers:
 * [Wikipedia: PID Controller](https://en.wikipedia.org/wiki/PID_controller)
 * [Good intro to PID controllers by Andrew Kramer](http://andrewjkramer.net/pid-motor-control/)
 
+### Integrating the Drive Base into ROS
 
 After getting the Roboclaw working with the drive motors, I moved on to finding a ROS node to drive the Roboclaw from a Raspberry PI 3 (the grey box pictured on the top shelf above). After searching through the ROS projects I could find that worked with the Roboclaw, I decided to create my own:
 
@@ -33,6 +38,8 @@ Once I could control the Roboclaw as a ROS node, I moved on to creating a basic 
 The teleop_node was very straight forward. 
 
 However the base_node required me to learn a bunch about robot kinematics, some linear algebra, and do a hard refresh of trigonmetry.
+
+### Leaning Kinematics, Linear Algebra, and Odometry
 
 Some pages that helped me understand Kinematics, linear algebra, and Odometry calculations:
 
@@ -50,11 +57,11 @@ I found this page succinct but clear. It filled in a lot of gaps for me, specifi
 
 * [http://robotsforroboticists.com/drive-kinematics/](http://robotsforroboticists.com/drive-kinematics/)
 
-Ultimately, to understand how to calculate Odometry, I needed to learn some linear algebra. In both of my undergraduate and masters degrees, I managed to avoid linear algebra, so I had to learn it now. I will say, however, that having a real-world problem to solve when learning math makes a HUGE difference. For me, trying to learn theoretical math without any context or problem to solve was really hard. But having an Odometry problem to solve, and these really great videos, I basically learned what I needed about linear algebra in one evening.
+Ultimately, to understand how to calculate odometry, I needed to learn some linear algebra. In both of my undergraduate and masters degrees, I managed to avoid linear algebra, so I had to learn it now. I will say, however, that having a real-world problem to solve when learning math makes a HUGE difference. For me, trying to learn theoretical math without any context or problem to solve was really hard. But having an odometry problem to solve, and these really great videos, I learned what I needed about linear algebra in one evening (up to video #6 which deals with 3D transformations).
 
 * [YouTube playlist: Essence of linear algebra](https://www.youtube.com/playlist?list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab)
 
-This answer by Christoph Rösmann ultimately was the template I used for my odometry calculations. I came across this page early on during my research, and it made absolutely no sense. But after studying the other topics, when I finally stumbled on this page again, this answer pulled it all together for me.
+This answer by Christoph Rösmann ultimately was the template I used for my odometry calculations. I came across this page early on during my research, and it made very little sense to me at that time. But then after studying the other topics above, when I finally stumbled on this page again this answer really pulled it all together for me.
 
 * [https://answers.ros.org/question/231942/computing-odometry-from-two-velocities/](https://answers.ros.org/question/231942/computing-odometry-from-two-velocities/)
 
