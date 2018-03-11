@@ -15,8 +15,9 @@ My oldest daughter picked the name **B2**. Prior to this robot, we build a light
 
 First, I modeled the robot in Fusion 360. Doing so allowed me to quickly think through and experiment with many of the physical design ideas I had in my mind. It also allowed me to build a list of parts I would need. Many of the parts I was considering had existing CAD models that I could import into Fusion 360 such as the motors, wheels, and IR sensors, etc. The design changed many times as I worked on the model. For example, at first I forgot to include a battery. When I added a 7.2v R/C battery to the model, I realized I needed a 2nd level to have more room to place some of the components.
 
-|![](docs/images/b2_design_v1.png) Initial Fusion 360 design|
-|---|
+|![](docs/images/b2_design_v1.png)|
+|:---:|
+|Initial Fusion 360 design|
 
 ### Building the Drive Base
 
@@ -73,8 +74,9 @@ This answer below by Christoph Rösmann ultimately was the template I used for m
 
 ### From Teleoperation to Autonomy
 
-|![](docs/images/20180310/teleop_setup.jpg) B2's teleoperation setup|
-|---|
+|<img src="docs/images/20180310/teleop_setup.jpg" style="width: 400px;"/>|
+|:---:|
+| B2's teleoperation setup|
 
 Having the `base_node` drive control and odometry logic sorted out, and tested using teleoperation, I moved on to building B2's ability to sense its environment.
 
@@ -94,18 +96,22 @@ I created a ROS node (`sensors_node`) to read the output of the ADC chip over SP
 
 Below is what B2 looks like on 10 Mar 2018.
 
-|![B2 on 10 Mar 2018](docs/images/20180310/angle2_20180310.jpg) Front-Right|![B2 on 10 Mar 2018](docs/images/20180310/angle1_20180310.jpg) Rear-Left|
-|----|----|
+|![B2 on 10 Mar 2018](docs/images/20180310/angle2_20180310.jpg)|![B2 on 10 Mar 2018](docs/images/20180310/angle1_20180310.jpg)|
+|:----:|:----:|
+|Front-Right|Rear-Left|
 
-|![B2 front on 10 Mar 2018](docs/images/20180310/front_20180310.jpg) Front|![B2 side on 10 Mar 2018](docs/images/20180310/side_20180310.jpg) Left Side|
-|----|----|
+|![B2 front on 10 Mar 2018](docs/images/20180310/front_20180310.jpg)|![B2 side on 10 Mar 2018](docs/images/20180310/side_20180310.jpg)|
+|:----:|:----:|
+|Front|Side|
 
 In the original design, I planned to have the drive wheels in the rear with the caster in the front (a RWD robot). You can see that in the Fusion 360 design where I made a stylistic bevel to the front edge (caster side) and left the rear edges square. My idea was that if the caster hit an obstacle on the floor, the resistance would cause more pressure on the rear wheels, thus providing more traction for the drive wheels allowing it to drive over the obstacle.
 
 But when testing using the joystick and `teleop_node` I realized the caster gets stuck on our thicker area rugs and the rear wheel just spin without traction. However if I drove B2 in reverse over the carpet, it climbed right over the rug with no problems. Therefore B2 is now a FWD robot!
 
-|![](docs/images/area_rugs.jpg) Area rugs: B2's archenemy|
-|---|
+<!--|![](docs/images/area_rugs.jpg)|-->
+|<img src="docs/images/area_rugs.jpg" style="width: 400px;"/>|
+|:---:|
+|Area rugs: B2's archenemy|
 
 
 **Lesson learned:** If you aren't yet sure how your robot will work, don't spend much time on cosmetic design. Else it might end up driving backwards like B2 does now.
