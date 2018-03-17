@@ -202,7 +202,7 @@ catkin_add_nosetests(tests/test_ir_sensors_unit.py)
 catkin_add_nosetests(tests/test_base_unit.py)
 
 # Node-level tests
-# if(CATKIN_ENABLE_TESTING)
-#   find_package(rostest REQUIRED)
-#   add_rostest(launch/stub.test)
-# endif()
+if(CATKIN_ENABLE_TESTING)
+  find_package(rostest REQUIRED)
+  add_rostest(launch/base.test)
+endif()

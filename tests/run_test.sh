@@ -10,8 +10,7 @@ echo "     Running Unit Tests     "
 echo "============================"
 echo
 pushd $DIR >/dev/null
-/usr/bin/env pytest -v test_ir_sensors_unit.py
-/usr/bin/env pytest -v test_base_unit.py
+/usr/bin/env pytest -v *unit.py
 popd > /dev/null
 
 # Node-level tests
@@ -20,4 +19,4 @@ echo "============================"
 echo "     Running Node Tests     "
 echo "============================"
 echo
-# rostest roboclaw_driver stub.test
+rostest b2 base.test

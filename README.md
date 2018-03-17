@@ -58,7 +58,7 @@ These videos below helped me understand how the equations for control and odomet
 * [(YouTube) Georgia Tech: Control of Mobile Robots- 2.3 Odometry](https://youtu.be/XbXhA4k7Ur8)
 
 
-I found this page filled in a lot of gaps for me, specifically related to why the ROS calculations looked different from the kinematic calculations used in non-ROS applications. Spoiler Alert: ROS calculates angular velocity from the center of the robot, where most kinematics papers calculate it from the ICC off the left side. That changes what the equations simplify to, and therefore makes the equations look slightly different.
+I found this page filled in a lot of gaps for me, specifically related to why the ROS calculations looked different from the kinematic calculations used in non-ROS applications. Specifically, it's typical in ROS to use unicycle model where the robot moves straight, or rotates around the center, but not both at the same time (i.e. arc calculations). Because of this, the angular velocity in ROS is typically around the center of the robot, and not the ICC of the arc traveled.
 
 * [http://robotsforroboticists.com/drive-kinematics/](http://robotsforroboticists.com/drive-kinematics/)
 
@@ -74,7 +74,7 @@ This answer below by Christoph Rösmann ultimately was the template I used for m
 
 ### From Teleoperation to Autonomy
 
-|<img src="docs/images/20180310/teleop_setup.jpg" style="width: 400px;"/>|
+|![](docs/images/20180310/teleop_setup.jpg)|
 |:---:|
 | B2's teleoperation setup|
 
@@ -108,8 +108,7 @@ In the original design, I planned to have the drive wheels in the rear with the 
 
 But when testing using the joystick and `teleop_node` I realized the caster gets stuck on our thicker area rugs and the rear wheel just spin without traction. However if I drove B2 in reverse over the carpet, it climbed right over the rug with no problems. Therefore B2 is now a FWD robot!
 
-<!--|![](docs/images/area_rugs.jpg)|-->
-|<img src="docs/images/area_rugs.jpg" style="width: 400px;"/>|
+|![](docs/images/area_rugs.jpg)|
 |:---:|
 |Area rugs: B2's archenemy|
 

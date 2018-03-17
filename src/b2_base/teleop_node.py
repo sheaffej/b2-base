@@ -12,6 +12,7 @@ DEFAULT_MAX_LINEAR_SPEED = 0.1  # m/sec
 DEFAULT_MAX_ANGULAR_SPEED = 1.0  # radians/sec
 X_AXIS = 4
 Y_AXIS = 3
+DEFAULT_CMD_TOPIC = "base_node/cmd_vel"
 
 
 class TeleOpNode:
@@ -28,7 +29,11 @@ class TeleOpNode:
         rospy.Subscriber("joy", Joy, self._joy_callback)
 
         # Set up the Twist publisher
-        self._cmd_vel_pub = rospy.Publisher('~cmd_vel', Twist, queue_size=1)
+        self._cmd_vel_pub = rospy.Publisher(
+            rospy.get_param('~cmd_vel', DEFAULT_CMD_TOPIC),
+            Twist,
+            queue_size=1
+        )
 
     def run(self):
         """Runs the main loop of the node.
