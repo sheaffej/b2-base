@@ -9,7 +9,7 @@ from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Twist
 import tf.transformations
 
-import b2_base.base_node
+import b2
 
 PKG = 'b2'
 NAME = 'base_node_test'
@@ -126,7 +126,7 @@ class TestBaseNode(unittest.TestCase):
 
         start_world_x = self.odom.pose.pose.position.x
         start_world_y = self.odom.pose.pose.position.y
-        start_world_theta = b2_base.base_node.yaw_from_odom_message(self.odom)
+        start_world_theta = b2.yaw_from_odom_message(self.odom)
 
         print("Expected Relative World: ({}, {}, {})".format(
             world_x_exp, world_y_exp, world_theta_exp))
@@ -138,7 +138,7 @@ class TestBaseNode(unittest.TestCase):
             print("[ODOM] ({}, {}, {}) at {}".format(
                 self.odom.pose.pose.position.x,
                 self.odom.pose.pose.position.y,
-                b2_base.base_node.yaw_from_odom_message(self.odom),
+                b2.yaw_from_odom_message(self.odom),
                 dt.now()
             ))
             self.pub_cmd_vel.publish(cmd)

@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 from __future__ import print_function
 
-import rospy
-import Adafruit_MCP3008
 import Adafruit_GPIO
+import Adafruit_MCP3008
+import b2
 from b2.msg import Proximity
+import rospy
+
 
 DEFAULT_NODE_NAME = "ir_sensors"
 DEFAULT_TEST_MODE = True
@@ -35,9 +37,9 @@ class IRSensors:
         proximity_dist = rospy.get_param("~proximity_distance", DEFAULT_PROXIMITY_DIST)
 
         # Calculate the ADC value when an object is in "proximity"
-        v_per_adc = volts_per_adc(vref, min_adc_val, max_adc_val)
+        v_per_adc = b2.volts_per_adc(vref, min_adc_val, max_adc_val)
         rospy.logdebug("v_per_adc: {}".format(v_per_adc))
-        self._acd_at_prox_dist = adc_at_proximity_dist(proximity_dist, v_per_adc)
+        self._acd_at_prox_dist = b2.adc_at_proximity_dist(proximity_dist, v_per_adc)
         rospy.logdebug("acd_at_prox_dist: {}".format(self._acd_at_prox_dist))
 
         if not self._test_mode:
@@ -45,7 +47,7 @@ class IRSensors:
                 spi=Adafruit_GPIO.SPI.SpiDev(SPI_PORT, SPI_DEVICE)
             )
         else:
-            self._mcp = MCP3008Stub()
+            self._mcp = b2.MCP3008Stub()
             for channel in self._adc_channel_list:
                 self._mcp.set_adc(channel, 700)
 
@@ -80,33 +82,33 @@ class IRSensors:
             rospy.logwarn("ROSInterruptException received in main loop")
 
 
-def volts_per_adc(vref, min_adc_reading, max_adc_reading):
-    return vref / float(max_adc_reading - min_adc_reading)
+# def volts_per_adc(vref, min_adc_reading, max_adc_reading):
+#     return vref / float(max_adc_reading - min_adc_reading)
 
 
-def volts_at_cm_distance(dist_cm):
-    # This function is the result of fitting the Voltage/Distance curve points in the
-    # Sharp GP2Y0A60SZXF data sheet https://www.pololu.com/file/0J812/gp2y0a60szxf_e.pdf
-    # using the site http://mycurvefit.com
-    # The function takes in distance in cm, and outputs the voltage of the IR sensor's output
-    return 0.5955366 + 6.8125134 / (1 + (dist_cm / 8.798111) ** 1.624654)
+# def volts_at_cm_distance(dist_cm):
+#     # This function is the result of fitting the Voltage/Distance curve points in the
+#     # Sharp GP2Y0A60SZXF data sheet https://www.pololu.com/file/0J812/gp2y0a60szxf_e.pdf
+#     # using the site http://mycurvefit.com
+#     # The function takes in distance in cm, and outputs the voltage of the IR sensor's output
+#     return 0.5955366 + 6.8125134 / (1 + (dist_cm / 8.798111) ** 1.624654)
 
 
-def adc_at_proximity_dist(prox_dist_m, v_per_adc):
-    prox_dist_cm = prox_dist_m * 100
-    v_at_prox_dist = volts_at_cm_distance(prox_dist_cm)
-    return int(v_at_prox_dist / v_per_adc)
+# def adc_at_proximity_dist(prox_dist_m, v_per_adc):
+#     prox_dist_cm = prox_dist_m * 100
+#     v_at_prox_dist = volts_at_cm_distance(prox_dist_cm)
+#     return int(v_at_prox_dist / v_per_adc)
 
 
-class MCP3008Stub:
-    def __init__(self):
-        self.channels = [0] * 8
+# class MCP3008Stub:
+#     def __init__(self):
+#         self.channels = [0] * 8
 
-    def read_adc(self, channel):
-        return self.channels[channel]
+#     def read_adc(self, channel):
+#         return self.channels[channel]
 
-    def set_adc(self, channel, val):
-        self.channels[channel] = val
+#     def set_adc(self, channel, val):
+#         self.channels[channel] = val
 
 
 if __name__ == "__main__":

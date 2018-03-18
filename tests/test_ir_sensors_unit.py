@@ -2,7 +2,7 @@
 from __future__ import print_function
 import unittest
 
-import b2_base.sensors_node
+import b2
 
 PKG = 'b2_base'
 NAME = 'b2_ir_sensors_unittest'
@@ -23,7 +23,7 @@ class TestIRSensors(unittest.TestCase):
         print()
         for vref, min_adc, max_adc, expected in tests:
             actual = round(
-                        b2_base.sensors_node.volts_per_adc(
+                        b2.volts_per_adc(
                             vref,
                             min_adc,
                             max_adc), 3)
@@ -44,7 +44,7 @@ class TestIRSensors(unittest.TestCase):
 
         print()
         for cm, expected in tests:
-            actual = round(b2_base.sensors_node.volts_at_cm_distance(cm), 3)
+            actual = round(b2.volts_at_cm_distance(cm), 3)
             print("Actual: {}, Expected: {}".format(actual, expected))
             self.assertEqual(actual, expected)
 
@@ -69,14 +69,14 @@ class TestIRSensors(unittest.TestCase):
 
         print()
         for dist_m, v_per_adc, expected in tests:
-            actual = b2_base.sensors_node.adc_at_proximity_dist(dist_m, v_per_adc)
+            actual = b2.adc_at_proximity_dist(dist_m, v_per_adc)
             print("Actual: {}, Expected: {}".format(actual, expected))
             self.assertEqual(actual, expected)
 
     def test_MCP3008stub(self):
         # (channel, val)
         tests = [val * 150 for val in range(8)]
-        stub = b2_base.sensors_node.MCP3008Stub()
+        stub = b2.MCP3008Stub()
 
         print()
         for idx, val in enumerate(tests):
@@ -85,6 +85,10 @@ class TestIRSensors(unittest.TestCase):
             expected = val
             print("Actual: {}, Expected: {}".format(actual, expected))
             self.assertEqual(actual, expected)
+
+    def test_load_adafruit_mcp3008(self):
+        import Adafruit_MCP3008
+        import Adafruit_GPIO
 
 
 if __name__ == "__main__":
