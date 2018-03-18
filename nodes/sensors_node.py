@@ -9,14 +9,15 @@ import rospy
 
 
 DEFAULT_NODE_NAME = "ir_sensors"
+DEFAULT_PROXIMITY_TOPIC = "~proximity"
 DEFAULT_TEST_MODE = True
-DEFAULT_PUB_FREQ = 1  # hertz
+DEFAULT_PUB_HZ = 1  # hertz
 
 DEFAULT_VREF = 5.0               # volts
 DEFAULT_MIN_ADC_VAL = 0
 DEFAULT_MAX_ADC_VAL = 1023
 DEFAULT_PROXIMITY_DIST = 0.30    # meters
-DEFAULT_ADC_CHANNEL_LIST = [0]
+DEFAULT_NUM_ADC_CHANNELS = 1
 
 # Hardware SPI configuration:
 SPI_PORT = 0
@@ -27,8 +28,8 @@ class IRSensors:
     def __init__(self, node_name):
         self._node_name = node_name
         self._test_mode = rospy.get_param("~test_mode", DEFAULT_TEST_MODE)
-        self._pub_rate = rospy.Rate(int(rospy.get_param("~pub_freq", DEFAULT_PUB_FREQ)))
-        self._adc_channel_list = rospy.get_param("~adc_channel_list", DEFAULT_ADC_CHANNEL_LIST)
+        self._pub_rate = rospy.Rate(int(rospy.get_param("~pub_hz", DEFAULT_PUB_HZ)))
+        self._num_adc_channels = rospy.get_param("~num_adc_channels", DEFAULT_NUM_ADC_CHANNELS)
 
         # Defined constants for the Sharp GP2Y0A60SZxF IR sensor
         vref = rospy.get_param("~vref", DEFAULT_VREF)
@@ -48,10 +49,14 @@ class IRSensors:
             )
         else:
             self._mcp = b2.MCP3008Stub()
-            for channel in self._adc_channel_list:
+            for channel in range(self._num_adc_channels):
                 self._mcp.set_adc(channel, 700)
 
-        self._center_pub = rospy.Publisher('~center', Proximity, queue_size=1)
+        self._center_pub = rospy.Publisher(
+            rospy.get_param("~proximity_topic", DEFAULT_PROXIMITY_TOPIC),
+            Proximity,
+            queue_size=1
+        )
 
     def run(self):
 
@@ -60,7 +65,7 @@ class IRSensors:
 
                 msg = Proximity()
 
-                for channel in self._adc_channel_list:
+                for channel in range(self._num_adc_channels):
                     is_proximity = False  # No object detected yet
 
                     # Read sensor values
@@ -80,35 +85,6 @@ class IRSensors:
 
         except rospy.ROSInterruptException:
             rospy.logwarn("ROSInterruptException received in main loop")
-
-
-# def volts_per_adc(vref, min_adc_reading, max_adc_reading):
-#     return vref / float(max_adc_reading - min_adc_reading)
-
-
-# def volts_at_cm_distance(dist_cm):
-#     # This function is the result of fitting the Voltage/Distance curve points in the
-#     # Sharp GP2Y0A60SZXF data sheet https://www.pololu.com/file/0J812/gp2y0a60szxf_e.pdf
-#     # using the site http://mycurvefit.com
-#     # The function takes in distance in cm, and outputs the voltage of the IR sensor's output
-#     return 0.5955366 + 6.8125134 / (1 + (dist_cm / 8.798111) ** 1.624654)
-
-
-# def adc_at_proximity_dist(prox_dist_m, v_per_adc):
-#     prox_dist_cm = prox_dist_m * 100
-#     v_at_prox_dist = volts_at_cm_distance(prox_dist_cm)
-#     return int(v_at_prox_dist / v_per_adc)
-
-
-# class MCP3008Stub:
-#     def __init__(self):
-#         self.channels = [0] * 8
-
-#     def read_adc(self, channel):
-#         return self.channels[channel]
-
-#     def set_adc(self, channel, val):
-#         self.channels[channel] = val
 
 
 if __name__ == "__main__":

@@ -188,7 +188,10 @@ include_directories(
 # )
 
 catkin_install_python(
-  PROGRAMS nodes/base_node.py nodes/sensors_node.py nodes/teleop_node.py
+  PROGRAMS
+  nodes/base_node.py
+  nodes/sensors_node.py
+  nodes/teleop_node.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
@@ -210,4 +213,5 @@ catkin_add_nosetests(tests/test_base_unit.py)
 if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
   add_rostest(launch/base.test)
+  add_rostest(launch/sensors.test)
 endif()

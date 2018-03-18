@@ -20,3 +20,4 @@ echo "     Running Node Tests     "
 echo "============================"
 echo
 rostest b2 base.test
+rostest b2 sensors.test
