@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 from __future__ import print_function
-# from datetime import datetime as dt
 import threading
 import unittest
 
