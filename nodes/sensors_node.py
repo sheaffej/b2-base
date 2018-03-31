@@ -3,7 +3,7 @@ from __future__ import print_function
 
 import Adafruit_GPIO
 import Adafruit_MCP3008
-import b2
+import b2_logic
 from b2.msg import Proximity
 import rospy
 
@@ -38,9 +38,9 @@ class IRSensors:
         proximity_dist = rospy.get_param("~proximity_distance", DEFAULT_PROXIMITY_DIST)
 
         # Calculate the ADC value when an object is in "proximity"
-        v_per_adc = b2.volts_per_adc(vref, min_adc_val, max_adc_val)
+        v_per_adc = b2_logic.volts_per_adc(vref, min_adc_val, max_adc_val)
         rospy.logdebug("v_per_adc: {}".format(v_per_adc))
-        self._acd_at_prox_dist = b2.adc_at_proximity_dist(proximity_dist, v_per_adc)
+        self._acd_at_prox_dist = b2_logic.adc_at_proximity_dist(proximity_dist, v_per_adc)
         rospy.logdebug("acd_at_prox_dist: {}".format(self._acd_at_prox_dist))
 
         if not self._test_mode:
@@ -48,7 +48,7 @@ class IRSensors:
                 spi=Adafruit_GPIO.SPI.SpiDev(SPI_PORT, SPI_DEVICE)
             )
         else:
-            self._mcp = b2.MCP3008Stub()
+            self._mcp = b2_logic.MCP3008Stub()
             for channel in range(self._num_adc_channels):
                 self._mcp.set_adc(channel, 700)
 

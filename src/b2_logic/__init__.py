@@ -9,3 +9,6 @@ from . sensor_functions import (
     volts_at_cm_distance,
     MCP3008Stub
 )
+# from . pilot_functions import (
+#     ProximitySensors
+# )

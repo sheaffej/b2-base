@@ -8,7 +8,7 @@ import rospy
 import tf
 
 from roboclaw_driver.msg import SpeedCommand, Stats
-import b2
+import b2_logic
 
 DEFAULT_NODE_NAME = "base_node"
 DEFAULT_CMD_TOPIC = "base_node/cmd_vel"
@@ -107,7 +107,7 @@ class BaseNode:
                 with self._cmd_vel_lock:
                     x_linear_cmd = self._x_linear_cmd
                     z_angular_cmd = self._z_angular_cmd
-                cmd = b2.calc_create_speed_cmd(
+                cmd = b2_logic.calc_create_speed_cmd(
                     x_linear_cmd, z_angular_cmd,
                     self._wheel_dist, self._wheel_radius,
                     self._ticks_per_rotation, self._max_drive_secs, self._max_qpps
@@ -127,7 +127,7 @@ class BaseNode:
 
                     nowtime = self._roboclaw_stats.header.stamp
 
-                odom = b2.calc_create_odometry(
+                odom = b2_logic.calc_create_odometry(
                     m1_enc_diff, m2_enc_diff, self._ticks_per_rotation,
                     self._wheel_dist, self._wheel_radius,
                     self._world_x, self._world_y, self._world_theta,
@@ -137,7 +137,7 @@ class BaseNode:
                 )
                 self._world_x = odom.pose.pose.position.x
                 self._world_y = odom.pose.pose.position.y
-                self._world_theta = yaw_from_odom_message(odom)
+                self._world_theta = b2_logic.yaw_from_odom_message(odom)
                 self._odom_pub.publish(odom)
 
                 # Broadcast tf transform for other nodes to use
@@ -175,22 +175,6 @@ class BaseNode:
         """
         with self._stats_lock:
             self._roboclaw_stats = stats
-
-
-def yaw_from_odom_message(odom):
-    """Converts an Odometry message into an Euler yaw value
-    Parameters:
-        :param Odometry odom:
-
-    :rtype: float
-    """
-    return tf.transformations.euler_from_quaternion(
-        [
-            odom.pose.pose.orientation.x,
-            odom.pose.pose.orientation.y,
-            odom.pose.pose.orientation.z,
-            odom.pose.pose.orientation.w,
-        ])[2]
 
 
 if __name__ == "__main__":

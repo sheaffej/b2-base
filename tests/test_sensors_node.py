@@ -11,7 +11,7 @@ from b2.msg import Proximity
 PKG = 'b2'
 NAME = 'base_node_test'
 
-DEFAULT_PROXIMITY_TOPIC = "/ir_sensors/proximity"
+DEFAULT_PROXIMITY_TOPIC = "ir_sensors/proximity"
 DEFAULT_LOOP_HZ = 10
 DEFAULT_NUM_FLIPS = 4
 
