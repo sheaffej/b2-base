@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
-    This is used for node-level testing of the sensors node.
-    It lauches the sensors node, and the testing node.
+    This is used for running sensors node in a dev environment.
+    It lauches the sensors node, in it's test mode where the sensors outputs simply flip
+    back and forth every second.
+
+    To use this, launch other nodes using additional launch files.
 -->
 <launch>
 
@@ -15,11 +18,5 @@
         <param name="~max_adc_val" type="int" value="1023"/>
         <param name="~proximity_distance" type="double" value="0.30"/>
     </node>
-
-    <test test-name="sensors_node_test" pkg="b2" type="test_sensors_node.py">
-        <param name="proximity_topic" type="str" value="ir_sensors/proximity"/>
-        <param name="loop_hz" type="int" value="10"/>
-        <param name="num_flips" type="int" value="4"/>
-    </test>
 
 </launch>

@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
-    This is the production launch file to launch the base node with a real roboclaw device.
+    This is used to only launch the base node, with no roboclaw node or testing node.
+    The roboclaw node should be launche separately, either with a real roboclaw device,
+    or the roboclaw stub.
 -->
 <launch>
 
@@ -18,17 +20,6 @@
         <param name="roboclaw_stats_topic" type="str" value="roboclaw/stats"/>
         <param name="speed_command_topic" type="str" value="~speed_command"/>
         <param name="odom_topic" type="str" value="~odom"/>
-    </node>
-
-    <node name="roboclaw" pkg="roboclaw_driver" type="roboclaw_node.py">
-        <param name="test_mode" type="bool" value="false"/>
-        <param name="dev_name" type="str" value="/dev/ttyACM0"/>
-        <param name="baud" type="int" value="115200"/>
-        <param name="address" type="int" value="128"/>
-        <param name="loop_hz" type="int" value="100"/>
-        <param name="deadman_secs" type="int" value="3"/>
-        <param name="speed_cmd_topic" type="str" value="roboclaw/speed_command"/>
-        <param name="stats_topic" type="str" value="roboclaw/stats"/>
     </node>
 
 </launch>

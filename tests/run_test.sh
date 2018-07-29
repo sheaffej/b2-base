@@ -10,7 +10,7 @@ echo "     Running Unit Tests     "
 echo "============================"
 echo
 pushd $DIR >/dev/null
-/usr/bin/env pytest -v *unit.py
+/usr/bin/env pytest -v unit/
 popd > /dev/null
 
 # Node-level tests

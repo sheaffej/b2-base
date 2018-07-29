@@ -11,10 +11,15 @@ from roboclaw_driver.msg import SpeedCommand, Stats
 import b2_logic
 
 DEFAULT_NODE_NAME = "base_node"
+
+# Subscribes
 DEFAULT_CMD_TOPIC = "base_node/cmd_vel"
 DEFAULT_ROBOCLAW_STATS_TOPIC = "roboclaw/stats"
+
+# Publishes
 DEFAULT_SPEED_CMD_TOPIC = "roboclaw/speed_command"
 DEFAULT_ODOM_TOPIC = "~odom"
+
 DEFAULT_LOOP_HZ = 10  # hertz
 DEFAULT_WHEEL_DIST = 0.220  # meters
 DEFAULT_WHEEL_RADIUS = 0.0325  # meters

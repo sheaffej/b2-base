@@ -9,7 +9,7 @@ This is my ROS project consisting of the custom code for my robot named **B2**.
 
 B2 is a 2-wheel differential drive robot. Its initial design goal is to create a hide & seek robot that will roam a single floor in a multi-room house looking for a person who is hiding. This goal was suggested by my elementary school-age kids when I was searching for a goal for which to build a robot from scratch.
 
-My oldest daughter picked the name **B2**. Prior to this robot, we build a light-follower robot partially following [a design](http://www.robotoid.com/my-first-robot/rbb-bot-phase2-part1.html) from the author of [Robot Builder's Bonanza](http://amzn.to/2vk4dpO). That first robot she named Beddo, from a [scene in Despicable Me 2](https://youtu.be/htcQ6CIKqGg?t=1m6s). Therefore she wanted this robot to be named **B2**.
+My daughter picked the name **B2**. Prior to this robot, we build a light-follower robot partially following [a design](http://www.robotoid.com/my-first-robot/rbb-bot-phase2-part1.html) from the author of [Robot Builder's Bonanza](http://amzn.to/2vk4dpO). That first robot she named Beddo, from a [scene in Despicable Me 2](https://youtu.be/htcQ6CIKqGg?t=1m6s). Therefore she wanted this robot to be named **B2**.
 
 ### The Initial Design
 
@@ -62,7 +62,7 @@ I found this page filled in a lot of gaps for me, specifically related to why th
 
 * [http://robotsforroboticists.com/drive-kinematics/](http://robotsforroboticists.com/drive-kinematics/)
 
-Ultimately, to understand how to calculate odometry I needed to learn some linear algebra. I had managed to avoid learning linear algebra in my undergrad and grad school, so I needed to learn it now. I will say that having a real-world problem to solve when learning math concepts makes a HUGE difference. Having my odometry problem to solve, and these really great videos below, I was able to learn what I needed about linear algebra pretty quickly. I only needed to watch up to video #6 which deals with 3D transformations.
+Ultimately, to understand how to calculate odometry I needed to learn some linear algebra. Having a real-world problem to solve when learning math concepts makes a HUGE difference. Having my odometry problem to solve, and these really great videos below, I was able to learn what I needed about linear algebra pretty quickly. I only needed to watch up to video #6 which deals with 3D transformations.
 
 * [YouTube playlist: Essence of linear algebra](https://www.youtube.com/playlist?list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab)
 

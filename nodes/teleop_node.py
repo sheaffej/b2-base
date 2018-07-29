@@ -7,12 +7,15 @@ from geometry_msgs.msg import Twist
 from sensor_msgs.msg import Joy
 
 DEFAULT_NODE_NAME = "teleop_node"
+
+# Publishes
+DEFAULT_CMD_TOPIC = "base_node/cmd_vel"
+
 DEFAULT_PUB_HZ = 10
 DEFAULT_MAX_LINEAR_SPEED = 0.1  # m/sec
 DEFAULT_MAX_ANGULAR_SPEED = 1.0  # radians/sec
 X_AXIS = 4
 Y_AXIS = 3
-DEFAULT_CMD_TOPIC = "base_node/cmd_vel"
 
 
 class TeleOpNode:
