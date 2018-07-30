@@ -9,4 +9,10 @@ def add_radians(a, b):
     Returns: The resulting angle in radians, with sign adjusted
         :rtype: float
     """
-    return (a + b + math.pi) % (2 * math.pi) - math.pi
+    result = (a + b + math.pi) % (2 * math.pi) - math.pi
+
+    # Convert -pi to pi
+    if result == -math.pi:
+        result = math.pi
+
+    return result

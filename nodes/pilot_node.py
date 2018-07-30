@@ -22,7 +22,7 @@ DEFAULT_CMD_TOPIC = "base_node/cmd_vel"
 DEFAULT_LOOP_HZ = 2                # hertz
 DEFAULT_FWD_SPEED = 0.5            # m/sec
 DEFAULT_TURN_SPEED = math.pi / 4   # radians/sec
-DEFAULT_TURN_DEGREES = 135         # degrees, will be converted to radians
+DEFAULT_TURN_DEGREES = 90          # degrees, will be converted to radians
 DEFAULT_TURN_DEGREE_TOLERANCE = 5  # degrees, will be converted to radians
 
 
@@ -37,6 +37,7 @@ if __name__ == "__main__":
     turn_radians_tolerance = math.radians(
         rospy.get_param("~turn_degree_tolerance", DEFAULT_TURN_DEGREE_TOLERANCE))
 
+    # Publishes
     cmd_vel_pub = rospy.Publisher(
         rospy.get_param('~cmd_topic', DEFAULT_CMD_TOPIC),
         Twist,
@@ -49,12 +50,14 @@ if __name__ == "__main__":
         turn_radians_tolerance, cmd_vel_pub
     )
 
+    # Subscribes
     rospy.Subscriber(
         rospy.get_param("~proximity_topic", DEFAULT_PROXIMITY_TOPIC),
         Proximity,
-        node.cmd_prox_callback
+        node.prox_callback
     )
 
+    # Subscribes
     rospy.Subscriber(
         rospy.get_param("~odom_topic", DEFAULT_ODOMETRY_TOPIC),
         Odometry,

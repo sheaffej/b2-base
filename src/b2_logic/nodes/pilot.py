@@ -34,17 +34,17 @@ class PilotNode:
         self._turn_radians_tolerance = turn_radians_tolerance
         self._cmd_vel_pub = cmd_vel_pub
 
-        self._prox_sensors = ProximitySensors()
+        self._prox_sensor = False
         self._odom = Odometry()
         self._state_lock = threading.RLock()
 
-        self._mode = 0                 # MODE_XXX enum
-        self._heading_goal = 0.0       # radians
-        self._current_heading = 0.0    # radians
-        self._obstacle_forward = None  # True/False/None
-        self._obstacle_right = None    # True/False/None
-        self._obstacle_left = None     # True/False/None
-        self._reverse_plan = False     # True/False
+        self._current_heading = 0.0      # radians
+        self._mode = MODE_OBSTACLE_PLAN  # MODE_XXX enum
+        self._heading_goal = 0.0         # radians
+        self._obstacle_forward = None    # True/False/None
+        self._obstacle_right = None      # True/False/None
+        self._obstacle_left = None       # True/False/None
+        self._reverse_plan = False       # True/False
 
     def run(self):
         looprate = rospy.Rate(self._loophz)
@@ -55,26 +55,7 @@ class PilotNode:
                 with self._state_lock:
                     self._current_heading = heading_from_odometry(self._odom)
 
-                if self._mode == MODE_FORWARD:
-                    if self._prox_sensors.center is True:
-                        # If driving forward, and center sensor detects obstacle
-                        # --> stop and enter obstacle mode
-                        self._send_drive_cmd(0)
-                        self._mode = MODE_OBSTACLE_PLAN
-                    else:
-                        # No obstacle, so command base forward some more
-                        self._send_drive_cmd(self._fwd_speed)
-
-                else:  # Mode is either _PLAN or _TURN
-
-                    # Need to calculate the heading to which to turn next
-                    if self._mode == MODE_OBSTACLE_PLAN:
-                        self._process_obstacle_plan()
-
-                    # Execute the turn to the target heading
-                    if self._mode == MODE_OBSTACLE_TURN:
-                        self._process_obstacle_turn()
-
+                self._decide()
                 looprate.sleep()
 
         except rospy.ROSInterruptException:
@@ -83,16 +64,12 @@ class PilotNode:
     # ~~~~~~~~~~~~~~~~~~~~~~~~
     #  Subscription callbacks
     # ~~~~~~~~~~~~~~~~~~~~~~~~
-    def cmd_prox_callback(self, msg):
+    def prox_callback(self, msg):
         """
             :param Proximity msg: The Proximity message
         """
         with self._state_lock:
-            cur = ProximitySensors()
-            cur.left = msg.sensors[0]
-            cur.center = msg.sensors[1]
-            cur.right = msg.sensors[2]
-            self._prox_sensors = cur
+            self._prox_sensor = msg.sensors[0]
 
     def odom_callback(self, msg):
         """
@@ -121,10 +98,32 @@ class PilotNode:
         self._cmd_vel_pub.publish(cmd)
 
     def _set_forward_mode(self):
+        self._obstacle_forward = None
         self._obstacle_right = None
         self._obstacle_left = None
         self._reverse_plan = False
         self._mode = MODE_FORWARD
+
+    def _decide(self):
+        if self._mode == MODE_FORWARD:
+            if self._prox_sensor is True:
+                # If driving forward, and center sensor detects obstacle
+                # --> stop and enter obstacle mode
+                self._send_drive_cmd(0)
+                self._mode = MODE_OBSTACLE_PLAN
+            else:
+                # No obstacle, so command base forward some more
+                self._send_drive_cmd(self._fwd_speed)
+
+        else:  # Mode is either _PLAN or _TURN
+
+            # Need to calculate the heading to which to turn next
+            if self._mode == MODE_OBSTACLE_PLAN:
+                self._process_obstacle_plan()
+
+            # Execute the turn to the target heading
+            if self._mode == MODE_OBSTACLE_TURN:
+                self._process_obstacle_turn()
 
     def _process_obstacle_plan(self):
         """
@@ -147,7 +146,7 @@ class PilotNode:
 
         if self._obstacle_forward in (None, False):
 
-            if self._prox_sensors.center is True:
+            if self._prox_sensor is True:
                 # Calculate the turn to check the right side
                 self._obstacle_forward = True
                 self._heading_goal = add_radians(
@@ -157,24 +156,25 @@ class PilotNode:
                 self._set_forward_mode()
 
         elif self._obstacle_right is None:
-            if self._prox_sensors.center is True:
-                # Calculate the turn to check the right side
+            if self._prox_sensor is True:
+                # Calculate the turn to check the left side
+                # We've already turned to the right, so we need to turn 180 to test
+                # the left side
                 self._obstacle_right = True
                 self._heading_goal = add_radians(
-                    self._current_heading, -self._turn_radians)
+                    self._current_heading, self._turn_radians * 2)
                 self._mode = MODE_OBSTACLE_TURN
             else:
                 self._set_forward_mode()
 
         elif self._obstacle_left is None:
-            if self._prox_sensors.center is True:
-                # Calculate the turn to check left side
-                # We've already turned to the right, so we need to turn 180 to test
-                # the left side
+            if self._prox_sensor is True:
+                # All three of fwd, right, left are blocked
                 self._obstacle_left = True
                 self._heading_goal = add_radians(
-                    self._current_heading, self._turn_radians * 2)
+                    self._current_heading, self._turn_radians)
                 self._mode = MODE_OBSTACLE_TURN
+                self._reverse_plan = True
             else:
                 self._set_forward_mode()
 
@@ -184,12 +184,17 @@ class PilotNode:
             self._set_forward_mode()
 
         else:
-            # This would be the case where forward, right, and left are blocked
-            # So we need to reverse out, which is turning 90-deg more left
-            self._heading_goal = add_radians(
-                self._current_heading, self._turn_radians)
-            self._mode = MODE_OBSTACLE_TURN
-            self._reverse_plan = True
+            # # This would be the case where forward, right, and left are blocked
+            # # So we need to reverse out, which is turning 90-deg more left
+            # self._heading_goal = add_radians(
+            #     self._current_heading, self._turn_radians)
+            # self._mode = MODE_OBSTACLE_TURN
+            # self._reverse_plan = True
+
+            # This should not be possible
+            message = "Obstacle plan logic reached else block that should not be possible"
+            rospy.logerr(message)
+            raise RuntimeError(message)
 
     def _process_obstacle_turn(self):
         turn_delta = self._heading_goal - self._current_heading
@@ -205,8 +210,8 @@ class PilotNode:
             self._mode = MODE_OBSTACLE_PLAN
 
 
-class ProximitySensors:
-    def __init__(self):
-        self.left = False
-        self.center = False
-        self.right = False
+# class ProximitySensors:
+#     def __init__(self):
+#         self.left = False
+#         self.center = False
+#         self.right = False
