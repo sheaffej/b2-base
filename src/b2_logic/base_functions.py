@@ -139,17 +139,17 @@ def calc_create_odometry(m1_enc_diff, m2_enc_diff, ticks_per_rotation,
     return odom
 
 
-def yaw_from_odom_message(odom):
-    """Converts an Odometry message into an Euler yaw value
-    Parameters:
-        :param Odometry odom:
+# def yaw_from_odom_message(odom):
+#     """Converts an Odometry message into an Euler yaw value
+#     Parameters:
+#         :param Odometry odom:
 
-    :rtype: float
-    """
-    return tf.transformations.euler_from_quaternion(
-        [
-            odom.pose.pose.orientation.x,
-            odom.pose.pose.orientation.y,
-            odom.pose.pose.orientation.z,
-            odom.pose.pose.orientation.w,
-        ])[2]
+#     :rtype: float
+#     """
+#     return tf.transformations.euler_from_quaternion(
+#         [
+#             odom.pose.pose.orientation.x,
+#             odom.pose.pose.orientation.y,
+#             odom.pose.pose.orientation.z,
+#             odom.pose.pose.orientation.w,
+#         ])[2]

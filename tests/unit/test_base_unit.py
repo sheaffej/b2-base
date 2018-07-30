@@ -5,7 +5,9 @@ import math
 
 import rospy
 
-import b2_logic
+# import b2_logic
+from b2_logic.base_functions import calc_create_speed_cmd, calc_create_odometry
+from b2_logic.odometry_helpers import yaw_from_odom_message
 
 PKG = 'b2'
 NAME = 'b2_base_unittest'
@@ -13,8 +15,8 @@ NAME = 'b2_base_unittest'
 
 class TestBase(unittest.TestCase):
 
-    def __init__(self, *args):
-        super(TestBase, self).__init__(*args)
+    def setUp(self):
+        print()
 
         # Robot parameters
         self.wheel_dist = 0.220
@@ -40,7 +42,7 @@ class TestBase(unittest.TestCase):
         print()
 
         for x_linear_cmd, z_angular_cmd, m1_expected, m2_expected in tests:
-            actual_cmd = b2_logic.calc_create_speed_cmd(
+            actual_cmd = calc_create_speed_cmd(
                 x_linear_cmd,
                 z_angular_cmd,
                 self.wheel_dist,
@@ -95,7 +97,7 @@ class TestBase(unittest.TestCase):
             m1_enc_diff = m1_qpps * delta_secs
             m2_enc_diff = m2_qpps * delta_secs
 
-            odom = b2_logic.calc_create_odometry(
+            odom = calc_create_odometry(
                 m1_enc_diff,
                 m2_enc_diff,
                 self.ticks_per_radian,
@@ -148,7 +150,7 @@ class TestBase(unittest.TestCase):
             for i in range(int(secs / delta_secs)):
                 t2 = last_odom_time + rospy.Duration(secs=delta_secs)
 
-                cmd = b2_logic.calc_create_speed_cmd(
+                cmd = calc_create_speed_cmd(
                     linear_x, angular_z,
                     self.wheel_dist, self.wheel_radius, self.ticks_per_radian,
                     self.max_drive_secs, self.max_qpps
@@ -159,7 +161,7 @@ class TestBase(unittest.TestCase):
                 m1_enc_diff = cmd.m1_qpps * delta_secs
                 m2_enc_diff = cmd.m2_qpps * delta_secs
 
-                odom = b2_logic.calc_create_odometry(
+                odom = calc_create_odometry(
                     m1_enc_diff,
                     m2_enc_diff,
                     self.ticks_per_radian,
@@ -176,7 +178,7 @@ class TestBase(unittest.TestCase):
 
                 world_x = odom.pose.pose.position.x
                 world_y = odom.pose.pose.position.y
-                world_theta = b2_logic.yaw_from_odom_message(odom)
+                world_theta = yaw_from_odom_message(odom)
                 last_odom_time = t2
                 print("x: {}, y: {}, 0: {}, t2: {}".format(
                     world_x, world_y, world_theta, t2))
@@ -192,7 +194,7 @@ class TestBase(unittest.TestCase):
         new_world_x = round(actual_odom.pose.pose.position.x, 3)
         new_world_y = round(actual_odom.pose.pose.position.y, 3)
 
-        new_world_theta = b2_logic.yaw_from_odom_message(actual_odom)
+        new_world_theta = yaw_from_odom_message(actual_odom)
 
         new_world_linear_x = round(actual_odom.twist.twist.linear.x, 3)
         new_world_linear_y = round(actual_odom.twist.twist.linear.y, 3)

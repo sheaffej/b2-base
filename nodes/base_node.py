@@ -8,7 +8,8 @@ import rospy
 import tf
 
 from roboclaw_driver.msg import SpeedCommand, Stats
-import b2_logic
+from b2_logic.odometry_helpers import yaw_from_odom_message
+from b2_logic.base_functions import calc_create_speed_cmd, calc_create_odometry
 
 DEFAULT_NODE_NAME = "base_node"
 
@@ -112,7 +113,7 @@ class BaseNode:
                 with self._cmd_vel_lock:
                     x_linear_cmd = self._x_linear_cmd
                     z_angular_cmd = self._z_angular_cmd
-                cmd = b2_logic.calc_create_speed_cmd(
+                cmd = calc_create_speed_cmd(
                     x_linear_cmd, z_angular_cmd,
                     self._wheel_dist, self._wheel_radius,
                     self._ticks_per_rotation, self._max_drive_secs, self._max_qpps
@@ -132,7 +133,7 @@ class BaseNode:
 
                     nowtime = self._roboclaw_stats.header.stamp
 
-                odom = b2_logic.calc_create_odometry(
+                odom = calc_create_odometry(
                     m1_enc_diff, m2_enc_diff, self._ticks_per_rotation,
                     self._wheel_dist, self._wheel_radius,
                     self._world_x, self._world_y, self._world_theta,
@@ -142,7 +143,7 @@ class BaseNode:
                 )
                 self._world_x = odom.pose.pose.position.x
                 self._world_y = odom.pose.pose.position.y
-                self._world_theta = b2_logic.yaw_from_odom_message(odom)
+                self._world_theta = yaw_from_odom_message(odom)
                 self._odom_pub.publish(odom)
 
                 # Broadcast tf transform for other nodes to use

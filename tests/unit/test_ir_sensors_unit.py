@@ -2,7 +2,10 @@
 from __future__ import print_function
 import unittest
 
-import b2_logic
+# import b2_logic
+from b2_logic.nodes.ir_sensors import (
+    volts_per_adc, volts_at_cm_distance, adc_at_proximity_dist, MCP3008Stub
+)
 
 PKG = 'b2'
 NAME = 'b2_ir_sensors_unittest'
@@ -10,8 +13,8 @@ NAME = 'b2_ir_sensors_unittest'
 
 class TestIRSensors(unittest.TestCase):
 
-    def __init__(self, *args):
-        super(TestIRSensors, self).__init__(*args)
+    def setUp(self):
+        print()
 
     def test_volts_per_adc(self):
         # (vref, min_adc_reading, max_adc_reading, expected)
@@ -23,7 +26,7 @@ class TestIRSensors(unittest.TestCase):
         print()
         for vref, min_adc, max_adc, expected in tests:
             actual = round(
-                        b2_logic.volts_per_adc(
+                        volts_per_adc(
                             vref,
                             min_adc,
                             max_adc), 3)
@@ -44,7 +47,7 @@ class TestIRSensors(unittest.TestCase):
 
         print()
         for cm, expected in tests:
-            actual = round(b2_logic.volts_at_cm_distance(cm), 3)
+            actual = round(volts_at_cm_distance(cm), 3)
             print("Actual: {}, Expected: {}".format(actual, expected))
             self.assertEqual(actual, expected)
 
@@ -69,14 +72,14 @@ class TestIRSensors(unittest.TestCase):
 
         print()
         for dist_m, v_per_adc, expected in tests:
-            actual = b2_logic.adc_at_proximity_dist(dist_m, v_per_adc)
+            actual = adc_at_proximity_dist(dist_m, v_per_adc)
             print("Actual: {}, Expected: {}".format(actual, expected))
             self.assertEqual(actual, expected)
 
     def test_MCP3008stub(self):
         # (channel, val)
         tests = [val * 150 for val in range(8)]
-        stub = b2_logic.MCP3008Stub()
+        stub = MCP3008Stub()
 
         print()
         for idx, val in enumerate(tests):
