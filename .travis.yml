@@ -31,7 +31,7 @@ python:
 
 env:
   global:
-    - BEFORE_SCRIPT='./scripts/extend_rosdep.sh'
+    # - BEFORE_SCRIPT='./scripts/extend_rosdep.sh'
     - UPSTREAM_WORKSPACE=file
   matrix:
     - ROS_DISTRO="kinetic" ROS_REPO=ros
