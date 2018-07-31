@@ -192,6 +192,7 @@ catkin_install_python(
   nodes/base_node.py
   nodes/sensors_node.py
   nodes/teleop_node.py
+  nodes/pilot_node.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
@@ -206,8 +207,9 @@ catkin_install_python(
 # endif()
 
 ## Add folders to be run by python nosetests
-catkin_add_nosetests(tests/test_ir_sensors_unit.py)
-catkin_add_nosetests(tests/test_base_unit.py)
+# catkin_add_nosetests(tests/test_ir_sensors_unit.py)
+# catkin_add_nosetests(tests/test_base_unit.py)
+catkin_add_nosetests(tests/unit/)
 
 # Node-level tests
 if(CATKIN_ENABLE_TESTING)
