@@ -63,3 +63,9 @@ teleop_node
 OUTPUT: base_node/cmd_vel
     Msg: Twist
     To: base_node
+
+
+=-=-=-=-=-=-=-=-=
+| industrial_ci |
+=-=-=-=-=-=-=-=-=
+rosrun industrial_ci run_travis -

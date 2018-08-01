@@ -209,11 +209,10 @@ catkin_install_python(
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(tests/test_ir_sensors_unit.py)
 # catkin_add_nosetests(tests/test_base_unit.py)
-catkin_add_nosetests(tests/unit/)
 
 # Node-level tests
-if(CATKIN_ENABLE_TESTING)
-  find_package(rostest REQUIRED)
-  add_rostest(launch/base.test)
-  add_rostest(launch/sensors.test)
-endif()
+# if(CATKIN_ENABLE_TESTING)
+#   find_package(rostest REQUIRED)
+#   add_rostest(launch/base.test)
+#   add_rostest(launch/sensors.test)
+# endif()

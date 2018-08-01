@@ -65,11 +65,10 @@
   <exec_depend>sensor_msgs</exec_depend>
   <exec_depend>tf</exec_depend>
 
-  <exec_depend>pip-Adafruit-MCP3008</exec_depend>
-  
+  <exec_depend>adafruit-mcp3008-pip</exec_depend>
+
   <!-- The export tag contains other, unspecified, tags -->
   <export>
     <!-- Other tools can request additional information be placed here -->
-
   </export>
 </package>
