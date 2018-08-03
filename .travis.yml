@@ -1,6 +1,8 @@
 # This Travis-CI integration uses ROS industrial_ci to build a ROS enviornment.
 #
 # Then unit and node-level tests are performed in the AFTER_SCRIPT
+#
+# Note: ICI is the abbreviation for industrial_ci
 
 sudo: required 
 dist: trusty 
@@ -11,6 +13,8 @@ compiler:
 python:
   - "2.7"
 
+# These are parameters for ICI
+# https://github.com/ros-industrial/industrial_ci/blob/master/doc/index.rst#optional-environment-variables 
 env:
   global:
     - BUILDER=none
@@ -24,8 +28,10 @@ env:
   matrix:
     - ROS_DISTRO="kinetic" ROS_REPO=ros
 
+# Clone the ICI repo into the repository being built/tested
 install:
   - git clone https://github.com/ros-industrial/industrial_ci.git .ci_config
 
+# Invoke the ICI entry point for Travis-CI
 script: 
   - source .ci_config/travis.sh

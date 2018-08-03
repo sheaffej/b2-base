@@ -42,11 +42,10 @@ catkin_make
 source $CATKIN_WORKSPACE/devel/setup.bash
 echo
 
+echo "===== rospack find ===="
 PKGS="$TARGET_REPO_NAME $UPSTREAM_PKGS"
 for P in $PKGS; do
-    echo "===== rospack find $P ===="
-    rospack find $P
-    echo
+    echo "${P} --> `rospack find $P`"
 done
 
 echo "==== run_tests ===="
