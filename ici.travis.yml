@@ -13,13 +13,13 @@ python:
 
 env:
   global:
-    - BUILDER=none
+    - BUILDER='none'
     - NOT_TEST_BUILD=true
     - NOT_TEST_INSTALL=true
-    - BEFORE_SCRIPT='pip install -q --upgrade pip'
-    - AFTER_SCRIPT='./scripts/ici_after_script.sh'
+    - BEFORE_SCRIPT='pip install --upgrade pip'
+    - AFTER_SCRIPT='./scripts/after_script.sh'
     - UPSTREAM_WORKSPACE=file
-    - DOCKER_RUN_OPTS="-e COVERALLS_REPO_TOKEN=2ThHgwYhN9fX3bs1Cf9on2Z5XAXGg3ikK -e TRAVIS=$TRAVIS"
+    - ICI=true
 
   matrix:
     - ROS_DISTRO="kinetic" ROS_REPO=ros
