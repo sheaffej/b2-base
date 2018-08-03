@@ -1,0 +1,3 @@
+[run]
+source = b2_logic
+omit = */dist-packages/*
