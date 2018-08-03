@@ -1,7 +1,7 @@
 # B2 - Hide & Seek Robot
 #### ...and more importantly, an educational platform for me, my kids, and my friends.
 
-[![Build Status](https://travis-ci.org/sheaffej/b2.svg?branch=master)](https://travis-ci.org/sheaffej/b2)
+[![Build Status](https://travis-ci.org/sheaffej/b2.svg?branch=master)](https://travis-ci.org/sheaffej/b2) [![Coverage Status](https://coveralls.io/repos/github/sheaffej/b2/badge.svg?branch=travis-setup)](https://coveralls.io/github/sheaffej/b2?branch=travis-setup)
 
 ### *This project is not yet complete*
 
