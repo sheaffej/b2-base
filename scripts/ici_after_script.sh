@@ -1,6 +1,4 @@
-UPSTREAM_PKGS="roboclaw_driver"
-
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+set -e
 
 WS_TARGET_REPO_PATH=$CATKIN_WORKSPACE/src/$TARGET_REPO_NAME
 
@@ -42,11 +40,8 @@ catkin_make
 source $CATKIN_WORKSPACE/devel/setup.bash
 echo
 
-echo "===== rospack find ===="
-PKGS="$TARGET_REPO_NAME $UPSTREAM_PKGS"
-for P in $PKGS; do
-    echo "${P} --> `rospack find $P`"
-done
+echo "===== rospack find $TARGET_REPO_NAME ===="
+rospack find $TARGET_REPO_NAME
 
 echo "==== run_tests ===="
 cd $WS_TARGET_REPO_PATH
