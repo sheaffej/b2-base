@@ -8,7 +8,7 @@ echo "============================"
 echo "     Running Unit Tests     "
 echo "============================"
 echo
-/usr/bin/env pytest -v --cache-clear --cov=b2_logic $PKG_DIR/tests/unit/
+/usr/bin/env pytest -v --cache-clear --cov=$PKG_DIR/src $PKG_DIR/tests/unit/
 
 echo
 echo "============================"

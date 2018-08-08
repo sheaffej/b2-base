@@ -8,7 +8,11 @@ import tf
 
 from roboclaw_driver.msg import SpeedCommand, Stats
 from b2_logic.odometry_helpers import yaw_from_odom_message
-from b2_logic.base_functions import calc_create_speed_cmd, calc_create_odometry
+from b2_logic.base_functions import (
+    calc_create_speed_cmd,
+    calc_base_frame_velocity_from_encoder_diffs,
+    calc_odometry_from_base_velocity
+)
 
 
 class BaseNode:
@@ -47,7 +51,7 @@ class BaseNode:
         """Runs the main loop of the node.
         Sends motor commands, and publishes odometry.
         """
-        rospy.loginfo("Running node")
+        rospy.logdebug("Running node")
         looprate = rospy.Rate(loop_hz)
 
         # Set initial states
@@ -89,14 +93,22 @@ class BaseNode:
 
                     nowtime = self._roboclaw_stats.header.stamp
 
-                odom = calc_create_odometry(
-                    m1_enc_diff, m2_enc_diff, self._ticks_per_rotation,
-                    self._wheel_dist, self._wheel_radius,
-                    self._world_x, self._world_y, self._world_theta,
-                    last_odom_time,
-                    self._base_frame_id, self._world_frame_id,
-                    nowtime
+                x_linear_v, y_linear_v, z_angular_v = calc_base_frame_velocity_from_encoder_diffs(
+                    m1_enc_diff, m2_enc_diff,
+                    self._ticks_per_rotation, self._wheel_radius, self._wheel_dist,
+                    last_odom_time, nowtime
                 )
+
+                time_delta_secs = (nowtime - last_odom_time).to_sec()
+                last_odom_time = nowtime
+
+                odom = calc_odometry_from_base_velocity(
+                    x_linear_v, y_linear_v, z_angular_v,
+                    self._world_x, self._world_y, self._world_theta,
+                    time_delta_secs, nowtime,
+                    self._base_frame_id, self._world_frame_id
+                )
+
                 self._world_x = odom.pose.pose.position.x
                 self._world_y = odom.pose.pose.position.y
                 self._world_theta = yaw_from_odom_message(odom)
@@ -113,6 +125,12 @@ class BaseNode:
                 )
 
                 last_odom_time = nowtime
+                rospy.logdebug(
+                    "World position: [{}, {}] heading: {}".format(
+                        self._world_x, self._world_y, self._world_theta))
+                rospy.logdebug(
+                    "Forward speed: {}, Turn speed: {}".format(
+                        self._x_linear_cmd, self._z_angular_cmd))
                 looprate.sleep()
 
         except rospy.ROSInterruptException:
