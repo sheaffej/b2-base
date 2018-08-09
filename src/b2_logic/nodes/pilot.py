@@ -8,7 +8,6 @@ from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
 
 from b2_logic.odometry_helpers import heading_from_odometry, normalize_theta, calc_steering_angle
-# from b2_logic.common_functions import add_radians
 
 # Mode enum
 MODE_FORWARD = 0
@@ -98,8 +97,7 @@ class PilotNode:
         cmd = Twist()
         cmd.angular.z = radians_sec
         self._cmd_vel_pub.publish(cmd)
-# TODO        
-        print("sent cmd_vel: {}".format(cmd.angular.z))
+        rospy.logdebug("sent cmd_vel: {}".format(cmd.angular.z))
 
     def _set_forward_mode(self):
         self._obstacle_forward = None
@@ -160,8 +158,6 @@ class PilotNode:
                 self._obstacle_forward = True
                 rospy.logdebug("(Planner) Forward is blocked")
 
-                # self._heading_goal = add_radians(
-                #     self._current_heading, -self._turn_radians)
                 self._heading_goal = normalize_theta(
                     self._current_heading - self._turn_radians)
 
@@ -179,8 +175,6 @@ class PilotNode:
                 # the left side
                 self._obstacle_right = True
                 rospy.logdebug("(Planner) Right side is blocked")
-                # self._heading_goal = add_radians(
-                #     self._current_heading, self._turn_radians * 2)
                 self._heading_goal = normalize_theta(
                     self._current_heading + self._turn_radians * 2)
                 rospy.logdebug("(Planner) Turning to check left side. New heading: {}".format(
@@ -194,8 +188,6 @@ class PilotNode:
                 # All three of fwd, right, left are blocked
                 self._obstacle_left = True
                 rospy.logdebug("(Planner) left is blocked")
-                # self._heading_goal = add_radians(
-                #     self._current_heading, self._turn_radians)
                 self._heading_goal = normalize_theta(
                     self._current_heading + self._turn_radians)
                 rospy.logdebug("(Planner) Turning to rear to backtrack. New heading: {}".format(
@@ -218,7 +210,6 @@ class PilotNode:
             raise RuntimeError(message)
 
     def _process_obstacle_turn(self):
-        # turn_delta = self._heading_goal - self._current_heading
         steering_angle = calc_steering_angle(self._current_heading, self._heading_goal)
         rospy.logdebug("Steering angle: {} radians".format(round(steering_angle, 2)))
         if abs(steering_angle) > self._turn_radians_tolerance:
