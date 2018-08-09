@@ -1,13 +1,14 @@
 from __future__ import print_function
 import threading
+import math
+from numpy import sign, clip
 
 import rospy
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
 
-# from b2_logic.pilot_functions import ProximitySensors, heading_from_odometry
-from b2_logic.odometry_helpers import heading_from_odometry
-from b2_logic.common_functions import add_radians
+from b2_logic.odometry_helpers import heading_from_odometry, normalize_theta, calc_steering_angle
+# from b2_logic.common_functions import add_radians
 
 # Mode enum
 MODE_FORWARD = 0
@@ -16,23 +17,20 @@ MODE_OBSTACLE_TURN = 2
 
 
 class PilotNode:
-    def __init__(self, loophz, fwd_speed, turn_speed,
-                 turn_radians, turn_radians_tolerance, cmd_vel_pub):
+    def __init__(self, loophz, turn_radians, turn_radians_tolerance, cmd_vel_pub, pcontroller):
         """
         Parameters:
             :param int loophz:
-            :param float fwd_speed:
-            :param float turn_speed:
             :param float turn_radians:
             :param float turn_radians_tolerance:
             :param rospy.Publisher cmd_vel_pub:
+            :param PContoller pcontroller:
         """
         self._loophz = loophz
-        self._fwd_speed = fwd_speed
-        self._turn_speed = turn_speed
         self._turn_radians = turn_radians
         self._turn_radians_tolerance = turn_radians_tolerance
         self._cmd_vel_pub = cmd_vel_pub
+        self._pcontroller = pcontroller
 
         self._prox_sensor = False
         self._odom = Odometry()
@@ -54,6 +52,10 @@ class PilotNode:
                 # Update the heading state
                 with self._state_lock:
                     self._current_heading = heading_from_odometry(self._odom)
+                    rospy.logdebug(
+                        "Current heading: {} deg (goal: {} deg)".format(
+                            round(math.degrees(normalize_theta(self._current_heading)), 2),
+                            round(math.degrees(self._heading_goal)), 2))
 
                 self._decide()
                 looprate.sleep()
@@ -96,6 +98,8 @@ class PilotNode:
         cmd = Twist()
         cmd.angular.z = radians_sec
         self._cmd_vel_pub.publish(cmd)
+# TODO        
+        print("sent cmd_vel: {}".format(cmd.angular.z))
 
     def _set_forward_mode(self):
         self._obstacle_forward = None
@@ -111,18 +115,23 @@ class PilotNode:
                 # --> stop and enter obstacle mode
                 self._send_drive_cmd(0)
                 self._mode = MODE_OBSTACLE_PLAN
+                rospy.logdebug("Obstacle detected while moving forward")
             else:
                 # No obstacle, so command base forward some more
-                self._send_drive_cmd(self._fwd_speed)
+                linear_v = self._pcontroller.linear_velocity()
+                self._send_drive_cmd(linear_v)
+                rospy.logdebug("Forward is clear, proceeding to drive forward")
 
         else:  # Mode is either _PLAN or _TURN
 
             # Need to calculate the heading to which to turn next
             if self._mode == MODE_OBSTACLE_PLAN:
+                rospy.logdebug("Planning next movement")
                 self._process_obstacle_plan()
 
             # Execute the turn to the target heading
             if self._mode == MODE_OBSTACLE_TURN:
+                rospy.logdebug("Turning base")
                 self._process_obstacle_turn()
 
     def _process_obstacle_plan(self):
@@ -149,8 +158,16 @@ class PilotNode:
             if self._prox_sensor is True:
                 # Calculate the turn to check the right side
                 self._obstacle_forward = True
-                self._heading_goal = add_radians(
-                    self._current_heading, -self._turn_radians)
+                rospy.logdebug("(Planner) Forward is blocked")
+
+                # self._heading_goal = add_radians(
+                #     self._current_heading, -self._turn_radians)
+                self._heading_goal = normalize_theta(
+                    self._current_heading - self._turn_radians)
+
+                rospy.logdebug(
+                    "(Planner) Turning to check right side. New heading: {}".format(
+                        math.degrees(self._heading_goal)))
                 self._mode = MODE_OBSTACLE_TURN
             else:
                 self._set_forward_mode()
@@ -161,8 +178,13 @@ class PilotNode:
                 # We've already turned to the right, so we need to turn 180 to test
                 # the left side
                 self._obstacle_right = True
-                self._heading_goal = add_radians(
-                    self._current_heading, self._turn_radians * 2)
+                rospy.logdebug("(Planner) Right side is blocked")
+                # self._heading_goal = add_radians(
+                #     self._current_heading, self._turn_radians * 2)
+                self._heading_goal = normalize_theta(
+                    self._current_heading + self._turn_radians * 2)
+                rospy.logdebug("(Planner) Turning to check left side. New heading: {}".format(
+                        math.degrees(self._heading_goal)))
                 self._mode = MODE_OBSTACLE_TURN
             else:
                 self._set_forward_mode()
@@ -171,8 +193,13 @@ class PilotNode:
             if self._prox_sensor is True:
                 # All three of fwd, right, left are blocked
                 self._obstacle_left = True
-                self._heading_goal = add_radians(
-                    self._current_heading, self._turn_radians)
+                rospy.logdebug("(Planner) left is blocked")
+                # self._heading_goal = add_radians(
+                #     self._current_heading, self._turn_radians)
+                self._heading_goal = normalize_theta(
+                    self._current_heading + self._turn_radians)
+                rospy.logdebug("(Planner) Turning to rear to backtrack. New heading: {}".format(
+                        math.degrees(self._heading_goal)))
                 self._mode = MODE_OBSTACLE_TURN
                 self._reverse_plan = True
             else:
@@ -181,37 +208,66 @@ class PilotNode:
         elif self._reverse_plan is True:
             # We were performing a turn to reverse. Since we're in plan mode
             # again, this means the turn is complete
+            rospy.logdebug("(Planner) Turn to rear complete, moving forward")
             self._set_forward_mode()
 
         else:
-            # # This would be the case where forward, right, and left are blocked
-            # # So we need to reverse out, which is turning 90-deg more left
-            # self._heading_goal = add_radians(
-            #     self._current_heading, self._turn_radians)
-            # self._mode = MODE_OBSTACLE_TURN
-            # self._reverse_plan = True
-
             # This should not be possible
             message = "Obstacle plan logic reached else block that should not be possible"
             rospy.logerr(message)
             raise RuntimeError(message)
 
     def _process_obstacle_turn(self):
-        turn_delta = self._heading_goal - self._current_heading
-        if abs(turn_delta) > self._turn_radians_tolerance:
+        # turn_delta = self._heading_goal - self._current_heading
+        steering_angle = calc_steering_angle(self._current_heading, self._heading_goal)
+        rospy.logdebug("Steering angle: {} radians".format(round(steering_angle, 2)))
+        if abs(steering_angle) > self._turn_radians_tolerance:
             # We still need to turn some more
-            if turn_delta < 0.0:
-                self._send_turn_cmd(-self._turn_speed)
-            else:
-                self._send_drive_cmd(self._turn_speed)
+            angular_v = self._pcontroller.angular_velocity(
+                self._current_heading, self._heading_goal)
+            self._send_turn_cmd(angular_v)
 
         else:
             # We are done turning, back to obstacle planning
             self._mode = MODE_OBSTACLE_PLAN
+            rospy.logdebug(
+                "Turn is complete (delta {} < turn radians tolerance {})".format(
+                    steering_angle, self._turn_radians_tolerance))
 
 
-# class ProximitySensors:
-#     def __init__(self):
-#         self.left = False
-#         self.center = False
-#         self.right = False
+class PVelocityController:
+    def __init__(self, min_linear_v, max_linear_v,
+                 min_angular_v, max_angular_v, linear_k=1, angular_k=1):
+        self.min_linear_v = min_linear_v
+        self.max_linear_v = max_linear_v
+        self.max_angular_v = max_angular_v
+        self.min_angular_v = min_angular_v
+        self.linear_k = linear_k
+        self.angular_k = angular_k
+
+    def linear_velocity(self, distance_m=1):
+        """Calculat the linear velocity using a Proportional (P) method,
+        clamped to within the min and max linear speeds.
+        Parameters:
+            :param float distance_m: Distance to drive
+        Returns:
+            The linear velocity in m/sec
+            :rtype: float
+        """
+        linear_v = self.linear_k * distance_m
+        _sign = sign(linear_v)
+        return clip(linear_v, self.min_linear_v, self.max_linear_v) * _sign
+
+    def angular_velocity(self, current_angle, target_angle):
+        """Calculate the angular velocity using a Proportional (P) method,
+        clamped to within the min and max angular speeds.
+        Parameters:
+            :param float current_angle: The current heading of the robot in radians
+            :param float target_angle: The goal heading of the robot in radians
+        Returns:
+            The angular velocity in radians/sec
+            :rtype: float
+        """
+        angular_v = self.angular_k * calc_steering_angle(current_angle, target_angle)
+        _sign = sign(angular_v)
+        return clip(abs(angular_v), self.min_angular_v, self.max_angular_v) * _sign

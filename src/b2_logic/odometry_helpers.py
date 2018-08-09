@@ -71,3 +71,14 @@ def normalize_theta(theta):
     if norm_theta < 0.0:
         norm_theta = (pi * 2) + norm_theta
     return norm_theta
+
+
+def calc_steering_angle(current_heading, target_heading):
+    diff_angle = normalize_theta(target_heading) - normalize_theta(current_heading)
+    _sign = sign(diff_angle)
+    if abs(diff_angle) > pi:
+        # Subtract from a full circle
+        diff_angle = (2 * pi) - abs(diff_angle)
+        # Reverse the sign
+        diff_angle = diff_angle * (_sign * -1)
+    return diff_angle

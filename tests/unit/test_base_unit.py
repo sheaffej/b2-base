@@ -17,7 +17,7 @@ from b2_logic.base_functions import (
     calc_base_frame_velocity_from_encoder_diffs,
     calc_odometry_from_base_velocity
 )
-from b2_logic.odometry_helpers import yaw_from_odom_message, calc_world_frame_pose
+from b2_logic.odometry_helpers import yaw_from_odom_message
 
 PKG = 'b2'
 NAME = 'b2_base_unittest'
@@ -236,65 +236,6 @@ class TestBaseFunctions(unittest.TestCase):
         self.assertAlmostEqual(new_world_linear_x, exp_linear_x, places=2)
         self.assertAlmostEqual(new_world_linear_y, exp_linear_y, places=2)
         self.assertAlmostEqual(new_world_angular_z, exp_angular_z, places=2)
-
-    def test_calc_world_frame_pose(self):
-        """Tests the odometry_helpers.calc_world_frame_pose() function.
-        Inputs: world x-y-theta velocities, and world starting coordinates, and duration
-        Outputs: new world x-y-theta pose
-        """
-        tests = [
-            # (world_x_velocity, world_y_velocity, world_angular_velocity,
-            #  begin_world_x, begin_world_y, begin_world_theta, time_delta_secs),
-            # ==> (new_world_x, new_world_y, new_world_theta)
-
-            # Drive straight forward at 0.5 m/s for 1 sec from origin
-            ((0.5, 0.0, 0.0,
-              0.0, 0.0, 0.0, 1),
-             (0.5, 0.0, 0.0)),
-
-            # Rotate left at 1 r/s for 1 sec from origin
-            ((0.0, 0.0, 1.0,
-              0.0, 0.0, 0.0, 1),
-             (0.0, 0.0, 1.0)),
-
-            # Rotate left at 3 r/s for 3 sec from origin
-            ((0.0, 0.0, 3.0,
-              0.0, 0.0, 0.0, 3),
-             (0.0, 0.0, (3 * 3) % math.pi)),
-
-            # Rotate right at 1 r/s for 1 sec from origin
-            ((0.0, 0.0, -1.0,
-              0.0, 0.0, 0.0, 1),
-             (0.0, 0.0, 5.28)),
-
-            # Drive x = 1.0 m/s, y = 1.0ms/s and rotation 1.0 r/s for 1 sec
-            # from the origin and 0.0 heading
-            ((1.0, 1.0, 1.0,
-              0.0, 0.0, 0.0, 1),
-             (1.0, 1.0, 1.0)),
-
-            # Drive x = 1.0 m/s, y = 1.0ms/s and rotation 1.0 r/s for 1 sec
-            # from the location (-123, 345) heading = 4 radians
-            ((1.0, 1.0, 1.0,
-              -123.0, 345.0, 4.0, 1),
-             (-122.0, 346.0, 5.0)),
-        ]
-
-        for inputs, expects in tests:
-            (world_x_velocity, world_y_velocity, world_angular_velocity,
-             begin_world_x, begin_world_y, begin_world_theta, time_delta_secs) = inputs
-
-            exp_world_x, exp_world_y, exp_world_theta = expects
-
-            new_world_x, new_world_y, new_world_theta = calc_world_frame_pose(
-                world_x_velocity, world_y_velocity, world_angular_velocity,
-                begin_world_x, begin_world_y, begin_world_theta,
-                time_delta_secs
-            )
-
-            self.assertAlmostEqual(new_world_x, exp_world_x, places=2)
-            self.assertAlmostEqual(new_world_y, exp_world_y, places=2)
-            self.assertAlmostEqual(new_world_theta, exp_world_theta, places=2)
 
     def test_calc_qpps(self):
         # (m1_enc_diff, m2_enc_diff, delta_secs,

@@ -3,7 +3,9 @@ from __future__ import print_function
 import unittest
 import math
 
-from b2_logic.nodes.pilot import PilotNode, MODE_FORWARD, MODE_OBSTACLE_PLAN, MODE_OBSTACLE_TURN
+from b2_logic.nodes.pilot import (
+    PilotNode, PVelocityController, MODE_FORWARD, MODE_OBSTACLE_PLAN, MODE_OBSTACLE_TURN
+)
 from b2.msg import Proximity
 
 PKG = 'b2'
@@ -22,14 +24,19 @@ class TestPilotNode(unittest.TestCase):
     def setUp(self):
         print()
         loophz = 2
-        fwd_speed = 0.5
-        turn_speed = math.pi / 4
+        min_fwd_speed = 0.1
+        max_fwd_speed = 0.5
+        min_turn_speed = 0.1
+        max_turn_speed = math.pi / 4
         turn_radians = math.radians(90)
         turn_radians_tolerance = math.radians(5)
         cmd_vel_pub = PublisherMock()
+
+        pcontroller = PVelocityController(
+            min_fwd_speed, max_fwd_speed, min_turn_speed, max_turn_speed
+        )
         self.node = PilotNode(
-            loophz, fwd_speed, turn_speed, turn_radians,
-            turn_radians_tolerance, cmd_vel_pub
+            loophz, turn_radians, turn_radians_tolerance, cmd_vel_pub, pcontroller
         )
 
     def test_fwd_obstacle_flow(self):
@@ -52,7 +59,7 @@ class TestPilotNode(unittest.TestCase):
         self.assertEqual(self.node._mode, MODE_OBSTACLE_PLAN)
 
         print("Decide 90-deg to right")
-        right_90 = DEG_90 * -1
+        right_90 = (2 * math.pi) - DEG_90
         self.node._decide()
         self._print_status()
         self.assertEqual(self.node._mode, MODE_OBSTACLE_TURN)
@@ -79,7 +86,7 @@ class TestPilotNode(unittest.TestCase):
         self.assertEqual(self.node._obstacle_left, None)
 
     def test_fwd_right_obstacle_flow(self):
-        right_90 = DEG_90 * -1
+        right_90 = (2 * math.pi) - DEG_90
         left_90 = DEG_90
 
         print("Set initial position, with obstacle in front")
