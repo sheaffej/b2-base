@@ -27,8 +27,8 @@ def yaw_from_odom_message(odom):
 
 
 def create_odometry_message(world_x, world_y, world_theta,
-                            x_linear_v, z_angular_v, odom_time,
-                            base_frame_id, world_frame_id):
+                            world_x_linear_v, world_y_linear_v, world_z_angular_v,
+                            odom_time, base_frame_id, world_frame_id):
     # Convert world orientation (theta) to a Quaternion for use with tf and Odometry
     quat_vals = tf.transformations.quaternion_from_euler(0, 0, world_theta)
     quat = Quaternion()
@@ -42,12 +42,12 @@ def create_odometry_message(world_x, world_y, world_theta,
     odom.header.frame_id = world_frame_id
     odom.pose.pose.position.x = world_x
     odom.pose.pose.position.y = world_y
-    odom.pose.pose.position.z = 0.0
+    odom.pose.pose.position.z = 0.0   # Because this robot can't fly to a vertical position
     odom.pose.pose.orientation = quat
     odom.child_frame_id = base_frame_id
-    odom.twist.twist.linear.x = x_linear_v
-    odom.twist.twist.linear.y = 0
-    odom.twist.twist.angular.z = z_angular_v
+    odom.twist.twist.linear.x = world_x_linear_v
+    odom.twist.twist.linear.y = world_y_linear_v
+    odom.twist.twist.angular.z = world_z_angular_v
     return odom
 
 

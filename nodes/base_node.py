@@ -38,10 +38,10 @@ if __name__ == "__main__":
     wheel_radius = rospy.get_param("~wheel_radius", DEFAULT_WHEEL_RADIUS)
     ticks_per_rotation = rospy.get_param("~ticks_per_rotation", DEFAULT_TICKS_PER_ROTATION)
     max_drive_secs = rospy.get_param("~max_drive_secs", DEFAULT_MAX_DRIVE_SECS)
+    deadman_secs = rospy.get_param("~deadman_secs", DEFAULT_DEADMAN_SECS)
     max_qpps = rospy.get_param("~max_qpps", DEFAULT_MAX_QPPS)
     base_frame_id = rospy.get_param("~base_frame_id", DEFAULT_BASE_FRAME_ID)
     world_frame_id = rospy.get_param("~odom_frame_id", DEFAULT_ODOM_FRAME_ID)
-    deadman_secs = rospy.get_param("~deadman_secs", DEFAULT_DEADMAN_SECS)
     loop_hz = rospy.get_param("~loop_hz", DEFAULT_LOOP_HZ)
 
     # Publishes
@@ -58,8 +58,9 @@ if __name__ == "__main__":
     tf_broadcaster = tf.broadcaster.TransformBroadcaster()
 
     node = BaseNode(wheel_dist, wheel_radius, ticks_per_rotation,
-                    max_drive_secs, max_qpps, base_frame_id, world_frame_id,
-                    deadman_secs, speed_cmd_pub, odom_pub, tf_broadcaster)
+                    max_drive_secs, deadman_secs, max_qpps,
+                    base_frame_id, world_frame_id,
+                    speed_cmd_pub, odom_pub, tf_broadcaster)
 
     # Joy message Subscriber
     rospy.Subscriber(

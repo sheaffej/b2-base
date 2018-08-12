@@ -55,6 +55,8 @@ def calc_base_frame_velocity_from_encoder_diffs(
     begin_odom_time, end_odom_time
 ):
 
+    # print("begin_odom_time:", begin_odom_time.to_sec())
+    # print("end_odom_time:", end_odom_time.to_sec())
     time_delta_secs = (end_odom_time - begin_odom_time).to_sec()
     # print("time_delta_secs: {}".format(time_delta_secs))
 
@@ -64,11 +66,12 @@ def calc_base_frame_velocity_from_encoder_diffs(
 
     left_angular_v, right_angular_v = _calc_wheel_angular_velocity(
         m1_qpps_actual, m2_qpps_actual, ticks_per_rotation)
+    # print("right_angular_v: {}".format(right_angular_v))
     # print("left_angular_v: {}".format(left_angular_v))
 
     left_linear_v, right_linear_v = _calc_wheel_linear_velocity(
         left_angular_v, right_angular_v, wheel_radius)
-    # print("right_linear_v: {}".format(left_linear_v))
+    # print("right_linear_v: {}".format(right_linear_v))
     # print("left_linear_v: {}".format(left_linear_v))
 
     x_linear_v, y_linear_v, z_angular_v = _calc_base_frame_velocity(
@@ -95,9 +98,8 @@ def calc_odometry_from_base_velocity(
 
     odom = create_odometry_message(
         world_x, world_y, world_theta,
-        x_linear_v, z_angular_v,
-        odom_time,
-        base_frame_id, world_frame_id
+        world_x_velocity, world_y_velocity, world_angular_velocity,
+        odom_time, base_frame_id, world_frame_id
     )
     return odom
 
