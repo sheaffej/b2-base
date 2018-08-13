@@ -71,7 +71,6 @@ class TestBaseLoop(unittest.TestCase):
 
         self._rostime = rospy.Time(0)
         self._monkey_patch_rospy_get_time()
-        rospy.init_node("test_base_loop")
 
         # Starting state
         self.base._m1_enc_prev = 0

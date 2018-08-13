@@ -127,7 +127,7 @@ class BaseNode:
         # -------------------------------
 
         if self._roboclaw_stats is None:
-            rospy.logwarn("No roboclaw stats received yet, skipping odometry calculation")
+            rospy.loginfo("No roboclaw stats received yet, skipping odometry calculation")
             return
 
         with self._stats_lock:

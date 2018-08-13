@@ -24,7 +24,7 @@ class TestBaseNode(unittest.TestCase):
     def __init__(self, *args):
         super(TestBaseNode, self).__init__(*args)
 
-        rospy.init_node("base_node_test", log_level=rospy.DEBUG, anonymous=True)
+        rospy.init_node(NAME, log_level=rospy.DEBUG, anonymous=True)
         self._loop_hz = rospy.get_param("~loop_hz", DEFAULT_LOOP_HZ)
 
         self.odom = Odometry()

@@ -11,11 +11,12 @@ from b2_logic.base_functions import (
     _calc_wheel_angular_velocity,
     _calc_wheel_linear_velocity,
     _calc_base_frame_velocity,
-    _calc_world_frame_velocity,
     calc_base_frame_velocity_from_encoder_diffs,
     calc_odometry_from_base_velocity
 )
-from b2_logic.odometry_helpers import yaw_from_odom_message, heading_from_odometry
+from b2_logic.odometry_helpers import (
+    yaw_from_odom_message, heading_from_odometry, calc_world_frame_velocity
+)
 
 PKG = 'b2'
 NAME = 'b2_base_functions_unittest'
@@ -412,7 +413,7 @@ class TestBaseFunctions(unittest.TestCase):
         ) in tests:
 
             (world_x_velocity, world_y_velocity,
-                world_z_velocity) = _calc_world_frame_velocity(
+                world_z_velocity) = calc_world_frame_velocity(
                     x_linear_v, y_linear_v, z_angular_v, world_theta)
             print()
             print("Inputs x_linear_v: {}, y_linear_v: {}, z_angular_v: {}, world_theta: {}".format(

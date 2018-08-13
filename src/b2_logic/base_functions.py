@@ -1,9 +1,16 @@
-from math import pi, sin, cos
+from math import pi
 
 import rospy
 
 from roboclaw_driver.msg import SpeedCommand
-from odometry_helpers import create_odometry_message, calc_world_frame_pose
+from odometry_helpers import (
+    create_odometry_message, calc_world_frame_pose, calc_world_frame_velocity
+)
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#  Below are used by the BaseNode directly
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 def calc_create_speed_cmd(x_linear_cmd, z_angular_cmd, wheel_dist,
@@ -85,7 +92,7 @@ def calc_odometry_from_base_velocity(
     time_delta_secs, odom_time,
     base_frame_id, world_frame_id
 ):
-    world_x_velocity, world_y_velocity, world_angular_velocity = _calc_world_frame_velocity(
+    world_x_velocity, world_y_velocity, world_angular_velocity = calc_world_frame_velocity(
         x_linear_v, y_linear_v, z_angular_v, world_theta)
     # print("world_x_velocity: {}".format(world_x_velocity))
     # print("world_y_velocity: {}".format(world_y_velocity))
@@ -102,6 +109,12 @@ def calc_odometry_from_base_velocity(
         odom_time, base_frame_id, world_frame_id
     )
     return odom
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#  Below are used by the functions above
+#  Separated out so they can be unit tested
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 def _calc_qpps(m1_enc_diff, m2_enc_diff, time_delta_secs):
@@ -137,12 +150,3 @@ def _calc_base_frame_velocity(left_linear_v, right_linear_v, wheel_dist):
     y_linear_v = 0  # Because the robot is nonholonomic
     z_angular_v = (right_linear_v - left_linear_v) / float(wheel_dist)
     return (x_linear_v, y_linear_v, z_angular_v)
-
-
-def _calc_world_frame_velocity(x_linear_v, y_linear_v, z_angular_v, world_theta):
-    # 2D rotation matrix math https://en.wikipedia.org/wiki/Rotation_matrix
-    # But since y_linear_v = 0, we don't actually need the second part of each equation
-    world_x_velocity = x_linear_v * cos(world_theta) - y_linear_v * sin(world_theta)
-    world_y_velocity = x_linear_v * sin(world_theta) + y_linear_v * cos(world_theta)
-    world_angular_velocity = z_angular_v
-    return (world_x_velocity, world_y_velocity, world_angular_velocity)
