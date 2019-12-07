@@ -36,6 +36,7 @@ class TestBaseFunctions(unittest.TestCase):
         self.world_frame_id = "world_frame"
         self.max_drive_secs = 1
         self.max_qpps = 6000
+        self.max_accel = 10000
 
     def test_calc_speed_command(self):
 
@@ -59,7 +60,8 @@ class TestBaseFunctions(unittest.TestCase):
                 self.wheel_radius,
                 self.ticks_per_rotation,
                 self.max_drive_secs,
-                self.max_qpps
+                self.max_qpps,
+                self.max_accel
             )
             print()
             print("### Input x_linear: {}, z_angular: {} ###".format(
@@ -183,7 +185,7 @@ class TestBaseFunctions(unittest.TestCase):
                 cmd = calc_create_speed_cmd(
                     linear_x, angular_z,
                     self.wheel_dist, self.wheel_radius, self.ticks_per_rotation,
-                    self.max_drive_secs, self.max_qpps
+                    self.max_drive_secs, self.max_qpps, self.max_accel
                 )
 
                 print("M1 QPPS: {} M2 QPPS: {}".format(cmd.m1_qpps, cmd.m2_qpps))

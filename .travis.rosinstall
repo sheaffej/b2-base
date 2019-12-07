@@ -1,4 +1,0 @@
-- git:
-    uri: https://github.com/sheaffej/roboclaw_driver.git
-    local-name: roboclaw_driver
-    # version: devel

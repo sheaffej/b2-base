@@ -5,20 +5,17 @@
 -->
 <launch>
 
-    <node name="pilot_node" pkg="b2" type="pilot_node.py">
-        <!-- <param name="loop_hz" type="int" value="1"/> -->
+    <!-- <node name="pilot_node" pkg="b2" type="pilot_node.py">
         <param name="max_fwd_speed" type="double" value="0.5"/>
-        <!-- <param name="min_fwd_speed" type="double" value="0.1"/> -->
         <param name="max_turn_speed" type="double" value="0.7853981634"/>
-        <!-- <param name="min_turn_speed" type="double" value="0.1"/> -->
         <param name="turn_degrees" type="int" value="90"/>
         <param name="turn_degree_tolerance" type="int" value="5"/>
         <param name="cmd_topic" type="str" value="base_node/cmd_vel"/>
         <param name="proximity_topic" type="str" value="ir_sensors/proximity"/>
         <param name="odom_topic" type="str" value="base_node/odom"/>
-    </node>
+    </node> -->
 
-    <node name="base_node" pkg="b2" type="base_node.py">
+    <!-- <node name="base_node" pkg="b2" type="base_node.py">
         <param name="wheel_dist" type="double" value="0.220"/>
         <param name="wheel_radius" type="double" value="0.0325"/>
         <param name="ticks_per_rotation" type="int" value="1632"/>
@@ -43,8 +40,16 @@
         <param name="deadman_secs" type="int" value="3"/>
         <param name="speed_cmd_topic" type="str" value="roboclaw/speed_command"/>
         <param name="stats_topic" type="str" value="roboclaw/stats"/>
-    </node>
-     
+    </node> -->
+
+    <include file="$(find b2)/launch/nodes/base-node.launch" />
+    <include file="$(find b2)/launch/nodes/roboclaw_front-node.launch" />
+    <include file="$(find b2)/launch/nodes/roboclaw_rear-node.launch" />
+    <include file="$(find b2)/launch/nodes/pilot-node.launch" />
+
+    <param name="roboclaw_front/test_mode" type="bool" value="true" />
+    <param name="roboclaw_rear/test_mode" type="bool" value="true"/>
+
     <test test-name="pilot_node_test" pkg="b2" type="test_pilot_node.py">
         <param name="proximity_topic" type="str" value="ir_sensors/proximity"/>
         <param name="odom_topic" type="str" value="base_node/odom"/>

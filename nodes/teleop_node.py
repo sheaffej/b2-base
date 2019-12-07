@@ -68,6 +68,7 @@ class TeleOpNode:
         with self._lock:
             self._x_pct = msg.axes[X_AXIS]
             self._z_pct = msg.axes[Y_AXIS]
+            rospy.logdebug("X: {}  |  Z: {}".format(self._x_pct, self._z_pct))
 
 
 if __name__ == "__main__":

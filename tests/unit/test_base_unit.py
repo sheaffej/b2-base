@@ -55,6 +55,7 @@ class TestBaseLoop(unittest.TestCase):
         max_drive_secs = 1
         deadman_secs = 1
         max_qpps = 3700
+        max_accel = 10000
         base_frame_id = "base_link"
         world_frame_id = "world"
 
@@ -64,7 +65,7 @@ class TestBaseLoop(unittest.TestCase):
 
         self.base = BaseNode(
             wheel_dist, wheel_radius, ticks_per_rotation,
-            max_drive_secs, deadman_secs, max_qpps,
+            max_drive_secs, deadman_secs, max_qpps, max_accel,
             base_frame_id, world_frame_id,
             self.speed_cmd_pub, self.odom_pub, self.tf_broadcaster
         )
@@ -153,12 +154,20 @@ class TestBaseLoop(unittest.TestCase):
         stats.m1_enc_val = m1_enc_val
         stats.m2_enc_val = m2_enc_val
         stats.header.stamp = rospy.get_rostime()
-        self.base.roboclaw_stats_callback(stats)
-        stats2 = self.base._roboclaw_stats
-        print("-> Stats: m1_enc_val: {}, m2_enc_val: {}, m1_enc_qpps: {}, "
+        self.base.roboclaw_stats_callback(stats, "front")
+        self.base.roboclaw_stats_callback(stats, "rear")
+
+        # Check that the stats were recorded
+        stats_front = self.base._roboclaw_front_stats
+        stats_rear = self.base._roboclaw_front_stats
+        print("-> Front stats: m1_enc_val: {}, m2_enc_val: {}, m1_enc_qpps: {}, "
               "m2_enc_qpps: {}, time {}".format(
-                stats2.m1_enc_val, stats2.m2_enc_val,
-                stats2.m1_enc_qpps, stats2.m2_enc_qpps, stats2.header.stamp.to_sec()))
+                stats_front.m1_enc_val, stats_front.m2_enc_val,
+                stats_front.m1_enc_qpps, stats_front.m2_enc_qpps, stats_front.header.stamp.to_sec()))
+        print("-> Rear stats: m1_enc_val: {}, m2_enc_val: {}, m1_enc_qpps: {}, "
+              "m2_enc_qpps: {}, time {}".format(
+                stats_rear.m1_enc_val, stats_rear.m2_enc_val,
+                stats_rear.m1_enc_qpps, stats_rear.m2_enc_qpps, stats_rear.header.stamp.to_sec()))
 
     def _send_cmd_vel(self, linear_x, angular_z):
         twist = Twist()

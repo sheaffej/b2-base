@@ -4,6 +4,7 @@ import threading
 
 import rospy
 from nav_msgs.msg import Odometry
+from geometry_msgs.msg import Twist
 
 from b2.msg import Proximity
 from b2_logic.odometry_helpers import heading_from_odometry
@@ -13,6 +14,7 @@ NAME = 'pilot_node_test'
 
 DEFAULT_SENSOR_TOPIC = "/ir_sensors/proximity"
 DEFAULT_ODOM_TOPIC = "/base_node/odom"
+DEFAULT_CMD_VEL_TOPIC = "/base_node/cmd_vel"
 
 
 class TestPilotNode(unittest.TestCase):
@@ -20,12 +22,15 @@ class TestPilotNode(unittest.TestCase):
         print()
         rospy.init_node(NAME, log_level=rospy.DEBUG, anonymous=True)
         self.state_lock = threading.RLock()
-        self.odom = None  # type: Odometry
+        self.cmd_vel = Twist()
+
+        self.max_linear_x = rospy.get_param("pilot_node/max_fwd_speed")
+        self.max_angular_z = rospy.get_param("pilot_node/max_turn_speed")
 
         rospy.Subscriber(
-            rospy.get_param("~odom_topic", DEFAULT_ODOM_TOPIC),
-            Odometry,
-            self._odom_callback
+            rospy.get_param("~cmd_vel_topic", DEFAULT_CMD_VEL_TOPIC),
+            Twist,
+            self._cmd_vel_callback
         )
 
         self.pub_proximity = rospy.Publisher(
@@ -33,61 +38,38 @@ class TestPilotNode(unittest.TestCase):
             Proximity,
             queue_size=1
         )
+
+        self.pub_odom = rospy.Publisher(
+            rospy.get_param("~odom_topic", DEFAULT_ODOM_TOPIC),
+            Odometry,
+            queue_size=1
+        )
+
         rospy.sleep(1)  # Let subscribers connect
 
     def test_fwd_obstacle(self):
-        # Verify driving forward from (0, 0, 0)
-        ok = False
-        timeout_secs = 10
-        for i in range(timeout_secs):
-            print("   Secs: {}".format(i))
-            heading, linear_x = self._get_heading_velocity()
-
-            if -0.5 <= heading <= 0.5:
-                if linear_x > 0.0:
-                    ok = True
-                    print("PASS) Forward heading and velocity OK")
-                    break
-
-            rospy.sleep(1)
-
-        if not ok:
-            self.fail(msg="Not driving forward at heading 0.0 after {} secs".format(timeout_secs))
+        # Verify driving forward
+        rospy.sleep(1)
+        self._verify_cmd_vel(self.max_linear_x, 0.0)
 
         # Introduce obstacle
+        rospy.sleep(2)
         self.pub_proximity.publish(Proximity(sensors=[True]))
         rospy.sleep(1)
+
+        # Verify turning to the right
+        self._verify_cmd_vel(0.0, -1.0, z_delta=0.5)
+
+        # Remove obstacle
         self.pub_proximity.publish(Proximity(sensors=[False]))
+        rospy.sleep(2)
 
-        # Verify now moving 90-deg to the right
-        cnt = 0
-        ok = False
-        timeout_secs = 10
-        for i in range(timeout_secs):
-            print("   Secs: {}".format(i))
-            heading, linear_x = self._get_heading_velocity()
+        # Verify driving forward
+        self._verify_cmd_vel(self.max_linear_x, 0.0)
 
-            # Check that heading is around -1.571 for 3 secs
-            if -1.600 <= heading <= -1.500:
-                if linear_x > 0.0:
-                    # We want to see this for 3 consecutive seconds
-                    cnt = cnt + 1
-                else:
-                    cnt = 0  # Zero out if not consecutive
-            else:
-                cnt = 0  # Zero out if not consecutive
-
-            if cnt >= 3:
-                ok = True
-                print("PASS) -90 deg heading and velocity OK")
-                break
-            rospy.sleep(1)
-        if not ok:
-            self.fail(msg="Not heading -90 deg for 3 consecutive seconds")
-
-    def _odom_callback(self, msg):
+    def _cmd_vel_callback(self, msg):
         with self.state_lock:
-            self.odom = msg
+            self.cmd_vel = msg
 
     def _get_heading_velocity(self):
         with self.state_lock:
@@ -96,6 +78,14 @@ class TestPilotNode(unittest.TestCase):
             print("   Heading: {}".format(heading))
             print("   X velocity: {}".format(linear_x))
         return heading, linear_x
+
+    def _verify_cmd_vel(self, exp_linear_x, exp_angular_z, x_delta=0.0, z_delta=0.0):
+        with self.state_lock:
+            print(" Linear X is {}, expected is {}".format(self.cmd_vel.linear.x, exp_linear_x))
+            self.assertAlmostEquals(self.cmd_vel.linear.x, exp_linear_x, delta=x_delta)
+            print(" Angular Z is {}, expected is {}".format(self.cmd_vel.angular.z, exp_angular_z))
+            self.assertAlmostEquals(self.cmd_vel.angular.z, exp_angular_z, delta=z_delta)
+            print("PASS")
 
 
 if __name__ == '__main__':

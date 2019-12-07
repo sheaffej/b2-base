@@ -1,17 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
-    This is used for running sensors node in a dev environment.
-    It lauches the sensors node, in it's test mode where the sensors outputs simply flip
-    back and forth every second.
-
-    To use this, launch other nodes using additional launch files.
+    This is used to launch only the ir_sensors node for on-robot operation.
 -->
 <launch>
 
     <node name="ir_sensors" pkg="b2" type="sensors_node.py">
-        <param name="test_mode" type="bool" value="true"/>
+        <param name="test_mode" type="bool" value="false"/>
         <param name="proximity_topic" type="str" value="ir_sensors/proximity"/>
-        <param name="pub_hz" type="int" value="1"/>
+        <param name="pub_hz" type="int" value="10"/>
         <param name="~num_adc_channels" type="int" value="1"/>
         <param name="~vref" type="double" value="5.0"/>
         <param name="~min_adc_val" type="int" value="0"/>

@@ -14,7 +14,7 @@ from odometry_helpers import (
 
 
 def calc_create_speed_cmd(x_linear_cmd, z_angular_cmd, wheel_dist,
-                          wheel_radius, ticks_per_rotation, max_drive_secs, max_qpps):
+                          wheel_radius, ticks_per_rotation, max_drive_secs, max_qpps, max_accel):
     """Calculate and send motor commands
 
     Parameters:
@@ -24,6 +24,7 @@ def calc_create_speed_cmd(x_linear_cmd, z_angular_cmd, wheel_dist,
         :param double wheel_radius: Wheel radius (m)
         :param double ticks_per_radian: Number of encoder ticks per radian of wheel rotation
         :param double max_drive_secs: Maximum seconds drive should run before stopping
+        :param int max_accel: Max QPPS of acceleration
 
     Returns: The SpeedCommand message
         :rtype: roboclaw.msg.SpeedCommand
@@ -53,6 +54,7 @@ def calc_create_speed_cmd(x_linear_cmd, z_angular_cmd, wheel_dist,
     cmd.m1_qpps = right_qpps_target
     cmd.m2_qpps = left_qpps_target
     cmd.max_secs = max_drive_secs
+    cmd.accel = max_accel
     return cmd
 
 

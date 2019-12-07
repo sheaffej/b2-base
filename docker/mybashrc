@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+export PYTHONDONTWRITEBYTECODE=1
+export SVGA_VGPU10=0
+
+# ---------------
+# ROS Environment
+# ---------------
+source "/opt/ros/${ROS_DISTRO}/setup.bash"
+source "${ROS_WS}/devel/setup.bash"
+
+cd ${ROS_WS}/src
+
+# -------
+# Helpers
+# -------
+alias wscd="cd $ROS_WS/src"
+alias wsmake="pushd $ROS_WS; catkin_make; source $ROS_WS/devel/setup.bash; popd" 
+alias wsmakeforce="pushd $ROS_WS; catkin_make --force-cmake; source $ROS_WS/devel/setup.bash; popd" 
+alias wstest="pushd $ROS_WS; catkin_make run_tests; echo; echo; catkin_test_results; popd >/dev/null" 
+
+# Git branch in command prompt
+# http://velomatrix.net/2011/01/04/show-the-current-git-branch-in-your-bash-prompt/
+source /etc/profile.d/bash_completion.sh
+export PS1='\[\e[92m\]\h\[\e[m\]:\[\e[93m\]\W\[\e[m\]$(__git_ps1 " (%s)") $ '

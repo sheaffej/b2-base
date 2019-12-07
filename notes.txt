@@ -44,6 +44,12 @@ OUTPUT: ir_sensors/proximity
     Msg: b2.Proximity
     To: pilot_node
 
+MCP3008
+https://learn.adafruit.com/raspberry-pi-analog-to-digital-converters/mcp3008
+To use hardware SPI first make sure you've enabled SPI using the raspi-config tool.
+Be sure to answer yes to both enabling the SPI interface and loading the SPI kernel module,
+then reboot the Pi.  Check you can see a /dev/spidev0.0 and /dev/spidev0.1 device when you run
+the ls -l /dev/spi* command before continuing.
 
 -----------
 pilot_node
@@ -73,3 +79,44 @@ OUTPUT: base_node/cmd_vel
 | industrial_ci |
 =-=-=-=-=-=-=-=-=
 rosrun industrial_ci run_travis -
+
+
+
+
+=-=-=-=-=-=-=-=-=-=-=
+| Roboclaw udev notes |
+=-=-=-=-=-=-=-=-=-=-=
+Find the Vendor and Product IDs from lsusb
+
+    root@b2:~# lsusb
+    Bus 001 Device 004: ID 03eb:2404 Atmel Corp. The Micro
+    Bus 001 Device 005: ID 03eb:2404 Atmel Corp. The Micro
+
+root: udevadm monitor  # to see udev events
+
+Above, the Atmel Corp devices "ID 03eb:2404" equals: Vendor:03eb & Product: 2404
+Then, find the serial number of a USB device (Ex: /dev/ttyACM0)
+
+    root@b2:~# udevadm info -a -n /dev/ttyACM0 | grep '{devpath}' | head -n1
+        ATTRS{devpath}=="1.4"
+
+Raspberry Pi 3 USB "devpaths":
+Each USB port has a fixed "devpath" that we can use to identify the Roboclaw,
+assuming we always plug the same Roboclaw into the same USB port.
+=============================
+|Ether|  [USB 1.2]  [USB 1.4]
+| Net |  [USB 1.3]  [USB 1.5]
+=============================
+
+# Create:  /etc/udev/rules.d/99-usb-serial.rules
+SUBSYSTEM=="tty", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2404", ATTRS{devpath}=="1.4", SYMLINK+="roboclaw_front"
+SUBSYSTEM=="tty", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2404", ATTRS{devpath}=="1.5", SYMLINK+="roboclaw_rear"
+
+Source: http://hintshop.ludvig.co.nz/show/persistent-names-usb-serial-devices/
+
+-------------------------
+cd $ROS_WS
+catkin_make
+apt-get update
+rosdep update
+rosdep install --from-paths src --ignore-src -r -y

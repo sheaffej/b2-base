@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    This is used to launch only the pilot node for on-robot operation.
+-->
+<launch>
+
+    <node name="pilot_node" pkg="b2" type="pilot_node.py">
+        <param name="loop_hz" type="int" value="10"/>
+        <param name="max_fwd_speed" type="double" value="1.0"/>
+        <param name="max_turn_speed" type="double" value="3.14159"/>
+        <param name="linear_k" type="double" value="1.0"/>
+        <param name="angular_k" type="double" value="1.0"/>
+        <param name="turn_degrees" type="int" value="90"/>
+        <param name="turn_degree_tolerance" type="int" value="5"/>
+        <param name="cmd_topic" type="str" value="base_node/cmd_vel"/>
+        <param name="proximity_topic" type="str" value="ir_sensors/proximity"/>
+        <param name="odom_topic" type="str" value="base_node/odom"/>
+    </node>
+
+</launch>
