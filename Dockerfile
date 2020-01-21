@@ -45,22 +45,22 @@ RUN pip install \
 
 
 RUN mkdir -p ${CODE_MOUNT} && \
-	mkdir -p ${CODE_MOUNT}/b2 && \
+	mkdir -p ${CODE_MOUNT}/b2-base && \
 	mkdir -p ${ROS_WS}/src && \
-	ln -s ${CODE_MOUNT}/b2 ${ROS_WS}/src/b2 && \
+	ln -s ${CODE_MOUNT}/b2-base/b2_base ${ROS_WS}/src/b2_base && \
 	ln -s ${CODE_MOUNT}/roboclaw_driver ${ROS_WS}/src/roboclaw_driver
 
 RUN cd ${CODE_MOUNT} && git clone https://github.com/sheaffej/roboclaw_driver.git
 
-RUN echo "source ${CODE_MOUNT}/b2/docker/mybashrc" >> /root/.bashrc && \
+RUN echo "source ${CODE_MOUNT}/b2-base/mybashrc" >> /root/.bashrc && \
 	echo "echo In bash_profile" >> /root/.bash_profile && \
 	echo "source /root/.bashrc" >> /root/.bash_profile
 
-ADD docker/entry /
-ENTRYPOINT [ "/entry" ]
+COPY entrypoint.sh /
+ENTRYPOINT [ "/entrypoint.sh" ]
 CMD [ "sleep", "infinity" ]
 
-ADD . ${CODE_MOUNT}/b2/
+COPY . ${CODE_MOUNT}/b2-base/
 
 RUN source "/opt/ros/$ROS_DISTRO/setup.bash" && \
 	apt-get update && \
