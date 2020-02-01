@@ -6,18 +6,14 @@ ENV PYTEST_ADDOPTS "--color=yes"
 SHELL [ "bash", "-c"]
 WORKDIR /root
 
-# Required for Raspberry Pi (i.e. Arm) builds
-# RUN if [ $(uname -m | grep arm) ]; then \ 
-# 	apt-get update && \
-# 	apt-get install -y libffi-dev libssl-dev && \
-# 	rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* ; \
-# 	fi
-
 # Install pip 
-RUN apt-get update && \
-	apt-get install -y python-pip && \
-	pip install --no-cache-dir --upgrade pip && \
-	rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+RUN apt update \
+	&& apt install -y \
+		libffi-dev \
+		libssl-dev \
+		python-pip \
+	&& pip install --no-cache-dir --upgrade pip \
+	&& rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* 
 
 # Install Python testing packages
 RUN pip install \
@@ -26,16 +22,15 @@ RUN pip install \
 		coveralls
 
 # Install OS packages
-RUN apt-get update && \
-	apt-get install -y \
+RUN apt update \
+	&& apt install -y \
 		bash-completion \
 		htop \
 		vim \
-	&& \
-	rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+	&& rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Workaround for faiing dep install on osrf/ros image https://stackoverflow.com/a/48569233
-RUN python -m easy_install --upgrade pyOpenSSL
+# RUN python -m easy_install --upgrade pyOpenSSL
 
 RUN pip install \
 	Adafruit-GPIO \
@@ -56,7 +51,7 @@ RUN mkdir -p ${CODE_MOUNT} \
 COPY . ${CODE_MOUNT}/
 
 RUN mkdir -p ${ROS_WS}/src && \
-	ln -s ${CODE_MOUNT}/b2-base/b2_base ${ROS_WS}/src/b2_base && \
+	ln -s ${CODE_MOUNT}/b2_base ${ROS_WS}/src/b2_base && \
 	ln -s ${CODE_MOUNT}/roboclaw_driver ${ROS_WS}/src/roboclaw_driver
 
 # RUN echo "source ${CODE_MOUNT}/b2-base/mybashrc" >> /root/.bashrc && \
