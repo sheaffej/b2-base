@@ -100,7 +100,9 @@ Then, find the serial number of a USB device (Ex: /dev/ttyACM0)
     root@b2:~# udevadm info -a -n /dev/ttyACM0 | grep '{devpath}' | head -n1
         ATTRS{devpath}=="1.4"
 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Raspberry Pi 3 USB "devpaths":
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Each USB port has a fixed "devpath" that we can use to identify the Roboclaw,
 assuming we always plug the same Roboclaw into the same USB port.
 =============================
@@ -111,6 +113,40 @@ assuming we always plug the same Roboclaw into the same USB port.
 # Create:  /etc/udev/rules.d/99-usb-serial.rules
 SUBSYSTEM=="tty", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2404", ATTRS{devpath}=="1.4", SYMLINK+="roboclaw_front"
 SUBSYSTEM=="tty", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2404", ATTRS{devpath}=="1.5", SYMLINK+="roboclaw_rear"
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Raspberry Pi 4 USB "devpaths"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# lsusb
+Bus 001 Device 004: ID 03eb:2404 Atmel Corp. The Micro
+Bus 001 Device 003: ID 03eb:2404 Atmel Corp. The Micro
+Bus 001 Device 002: ID 2109:3431 VIA Labs, Inc. Hub
+Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+
+The devices IDs seem to be assigned in the order they are discovered. Above Bus 001 Device 003 and 004
+are the Roboclaws. However if I unplug one, and plug it back in, it will be assiged Device 005.
+
+#lsusb
+Bus 001 Device 004: ID 03eb:2404 Atmel Corp. The Micro
+Bus 001 Device 005: ID 03eb:2404 Atmel Corp. The Micro
+Bus 001 Device 002: ID 2109:3431 VIA Labs, Inc. Hub
+Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+
+But if I reboot, they seem to be disovered in a top-down fashion. So the top port will be discovered
+first and assigned 1.3, followed by the bottom port. So we can assume after reboot that the devices
+will have certain device IDs.
+
+=============================
+-USB 2.0-  -USB 3.0-
+[USB 1.3]  [USB 2.2]  |Ether|
+[USB 1.4]  [USB 2.3]  | Net |
+=============================
+
+# Create:  /etc/udev/rules.d/99-usb-serial.rules
+SUBSYSTEM=="tty", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2404", ATTRS{devpath}=="1.3", SYMLINK+="roboclaw_front"
+SUBSYSTEM=="tty", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2404", ATTRS{devpath}=="1.4", SYMLINK+="roboclaw_rear"
+
+*** Reboot after replugging any of the roboclaws as they will have a new Device ID *****
 
 Source: http://hintshop.ludvig.co.nz/show/persistent-names-usb-serial-devices/
 

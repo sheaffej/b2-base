@@ -1,4 +1,4 @@
-FROM osrf/ros:melodic-desktop-full-bionic
+FROM ros:melodic-robot-bionic
 
 ENV CODE_MOUNT /workspaces
 ENV ROS_WS /ros
@@ -43,24 +43,28 @@ RUN pip install \
 	spidev \
 	pyserial
 
+# RUN mkdir -p ${CODE_MOUNT} && \
+# 	mkdir -p ${CODE_MOUNT}/b2-base && \
+# 	mkdir -p ${ROS_WS}/src && \
+# 	ln -s ${CODE_MOUNT}/b2-base/b2_base ${ROS_WS}/src/b2_base && \
+# 	ln -s ${CODE_MOUNT}/roboclaw_driver ${ROS_WS}/src/roboclaw_driver
 
-RUN mkdir -p ${CODE_MOUNT} && \
-	mkdir -p ${CODE_MOUNT}/b2-base && \
-	mkdir -p ${ROS_WS}/src && \
+RUN mkdir -p ${CODE_MOUNT} \
+&& cd ${CODE_MOUNT} \
+&& git clone https://github.com/sheaffej/roboclaw_driver.git
+
+COPY . ${CODE_MOUNT}/
+
+RUN mkdir -p ${ROS_WS}/src && \
 	ln -s ${CODE_MOUNT}/b2-base/b2_base ${ROS_WS}/src/b2_base && \
 	ln -s ${CODE_MOUNT}/roboclaw_driver ${ROS_WS}/src/roboclaw_driver
 
-RUN cd ${CODE_MOUNT} && git clone https://github.com/sheaffej/roboclaw_driver.git
-
-RUN echo "source ${CODE_MOUNT}/b2-base/mybashrc" >> /root/.bashrc && \
-	echo "echo In bash_profile" >> /root/.bash_profile && \
-	echo "source /root/.bashrc" >> /root/.bash_profile
+# RUN echo "source ${CODE_MOUNT}/b2-base/mybashrc" >> /root/.bashrc && \
+# 	echo "source /root/.bashrc" >> /root/.bash_profile
 
 COPY entrypoint.sh /
 ENTRYPOINT [ "/entrypoint.sh" ]
 CMD [ "sleep", "infinity" ]
-
-COPY . ${CODE_MOUNT}/b2-base/
 
 RUN source "/opt/ros/$ROS_DISTRO/setup.bash" && \
 	apt-get update && \
