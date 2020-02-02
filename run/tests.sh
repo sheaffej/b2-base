@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 set -e
 
-IMAGE_NAME="b2-base:latest"
-CONTAINER_NAME="b2-base"
-PKG_DIR="/ros/src/b2"
+IMAGE_NAME="sheaffej/b2-base"
+# CONTAINER_NAME="b2-base-tests"
+PKG_DIR="/ros/src/b2_base"
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+MYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 UNIT=""
 VOLUME="$VOLUME"
 COVERALLS=""
