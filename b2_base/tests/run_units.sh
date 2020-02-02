@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-PKG_DIR=`rospack find b2`
+PKG_DIR=`rospack find b2_base`
 
 echo
 echo "============================"

@@ -4,7 +4,7 @@
 -->
 <launch>
 
-    <node name="pilot_node" pkg="b2" type="pilot_node.py">
+    <node name="pilot_node" pkg="b2_base" type="pilot_node.py">
         <param name="loop_hz" type="int" value="10"/>
         <param name="max_fwd_speed" type="double" value="1.0"/>
         <param name="max_turn_speed" type="double" value="3.14159"/>

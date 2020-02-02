@@ -6,10 +6,10 @@ import rospy
 from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Twist
 
-from b2.msg import Proximity
+from b2_base.msg import Proximity
 from b2_logic.odometry_helpers import heading_from_odometry
 
-PKG = 'b2'
+PKG = 'b2_base'
 NAME = 'pilot_node_test'
 
 DEFAULT_SENSOR_TOPIC = "/ir_sensors/proximity"

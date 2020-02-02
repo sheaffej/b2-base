@@ -6,7 +6,7 @@ import math
 from b2_logic.nodes.pilot import (
     PilotNode, PVelocityController, MODE_FORWARD, MODE_OBSTACLE_PLAN, MODE_OBSTACLE_TURN
 )
-from b2.msg import Proximity
+from b2_base.msg import Proximity
 
 PKG = 'b2'
 NAME = 'b2_pilot_node_unittest'

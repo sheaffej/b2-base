@@ -32,14 +32,14 @@
         <param name="stats_topic" type="str" value="roboclaw/stats"/>
     </node> -->
 
-    <include file="$(find b2)/launch/nodes/base-node.launch" />
-    <include file="$(find b2)/launch/nodes/roboclaw_front-node.launch" />
-    <include file="$(find b2)/launch/nodes/roboclaw_rear-node.launch" />
+    <include file="$(find b2_base)/launch/nodes/base-node.launch" />
+    <include file="$(find b2_base)/launch/nodes/roboclaw_front-node.launch" />
+    <include file="$(find b2_base)/launch/nodes/roboclaw_rear-node.launch" />
 
     <param name="roboclaw_front/test_mode" value="true" />
     <param name="roboclaw_rear/test_mode" value="true"/>
 
-    <test test-name="base_node_test" pkg="b2" type="test_base_node.py">
+    <test test-name="base_node_test" pkg="b2_base" type="test_base_node.py">
         <param name="cmd_vel_topic" type="str" value="/base_node/cmd_vel"/>
         <param name="odom_topic" type="str" value="/base_node/odom"/>
     </test>

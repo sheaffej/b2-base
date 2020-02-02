@@ -7,7 +7,7 @@ from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
 
 from b2_logic.nodes.pilot import PilotNode, PVelocityController
-from b2.msg import Proximity
+from b2_base.msg import Proximity
 
 
 DEFAULT_NODE_NAME = "pilot_node"

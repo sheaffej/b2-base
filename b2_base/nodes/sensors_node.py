@@ -5,7 +5,7 @@ import Adafruit_GPIO
 import Adafruit_MCP3008
 import rospy
 
-from b2.msg import Proximity
+from b2_base.msg import Proximity
 from b2_logic.nodes.ir_sensors import IRSensors, MCP3008Stub
 
 DEFAULT_NODE_NAME = "ir_sensors"

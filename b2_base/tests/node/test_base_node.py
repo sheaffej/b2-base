@@ -12,7 +12,7 @@ import tf.transformations
 from b2_logic.odometry_helpers import yaw_from_odom_message, normalize_theta
 
 
-PKG = 'b2'
+PKG = 'b2_base'
 NAME = 'base_node_test'
 
 DEFAULT_TWIST_TOPIC = "/base_node/cmd_vel"

@@ -7,7 +7,7 @@ from b2_logic.nodes.ir_sensors import (
     volts_per_adc, volts_at_cm_distance, adc_at_proximity_dist, MCP3008Stub
 )
 
-PKG = 'b2'
+PKG = 'b2_base'
 NAME = 'b2_ir_sensors_unittest'
 
 

@@ -16,10 +16,10 @@
         <param name="~proximity_distance" type="double" value="0.30"/>
     </node> -->
 
-    <include file="$(find b2)/launch/nodes/ir_sensors-node.launch" />
+    <include file="$(find b2_base)/launch/nodes/ir_sensors-node.launch" />
     <param name="ir_sensors/test_mode" type="bool" value="true"/>
 
-    <test test-name="sensors_node_test" pkg="b2" type="test_sensors_node.py">
+    <test test-name="sensors_node_test" pkg="b2_base" type="test_sensors_node.py">
         <param name="proximity_topic" type="str" value="ir_sensors/proximity"/>
         <param name="loop_hz" type="int" value="10"/>
         <param name="num_flips" type="int" value="4"/>

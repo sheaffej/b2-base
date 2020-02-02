@@ -46,20 +46,21 @@ RUN pip install \
 
 RUN mkdir -p ${CODE_MOUNT} \
 && cd ${CODE_MOUNT} \
+&& mkdir -p b2-base \
 && git clone https://github.com/sheaffej/roboclaw_driver.git
 
-COPY b2_base/ ${CODE_MOUNT}/b2_base/
+COPY b2_base/ ${CODE_MOUNT}/b2-base/b2_base/
 
 RUN mkdir -p ${ROS_WS}/src && \
-	ln -s ${CODE_MOUNT}/b2_base ${ROS_WS}/src/b2_base && \
+	ln -s ${CODE_MOUNT}/b2-base/b2_base ${ROS_WS}/src/b2_base && \
 	ln -s ${CODE_MOUNT}/roboclaw_driver ${ROS_WS}/src/roboclaw_driver
-
-# RUN echo "source ${CODE_MOUNT}/b2-base/mybashrc" >> /root/.bashrc && \
-# 	echo "source /root/.bashrc" >> /root/.bash_profile
 
 COPY entrypoint.sh /
 ENTRYPOINT [ "/entrypoint.sh" ]
 CMD [ "bash" ]
+
+RUN echo "source /entrypoint.sh" >> /root/.bashrc && \
+	echo "source /root/.bashrc" >> /root/.bash_profile
 
 RUN source "/opt/ros/$ROS_DISTRO/setup.bash" && \
 	apt-get update && \

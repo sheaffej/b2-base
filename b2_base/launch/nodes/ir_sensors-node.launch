@@ -4,7 +4,7 @@
 -->
 <launch>
 
-    <node name="ir_sensors" pkg="b2" type="sensors_node.py">
+    <node name="ir_sensors" pkg="b2_base" type="sensors_node.py">
         <param name="test_mode" type="bool" value="false"/>
         <param name="proximity_topic" type="str" value="ir_sensors/proximity"/>
         <param name="pub_hz" type="int" value="10"/>

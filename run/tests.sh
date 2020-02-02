@@ -55,6 +55,6 @@ echo "============================"
 echo "     Running Node Tests     "
 echo "============================"
 echo
-docker run --rm $VOLUME $IMAGE_NAME rostest b2 base.test
-docker run --rm $VOLUME $IMAGE_NAME rostest b2 sensors.test
-docker run --rm $VOLUME $IMAGE_NAME rostest b2 pilot.test
+docker run --rm $VOLUME $IMAGE_NAME rostest b2_base base.test
+docker run --rm $VOLUME $IMAGE_NAME rostest b2_base sensors.test
+docker run --rm $VOLUME $IMAGE_NAME rostest b2_base pilot.test

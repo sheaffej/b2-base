@@ -4,7 +4,7 @@
 -->
 <launch>
 
-    <node name="base_node" pkg="b2" type="base_node.py">
+    <node name="base_node" pkg="b2_base" type="base_node.py">
         <param name="wheel_dist" type="double" value="0.180"/>
         <param name="wheel_radius" type="double" value="0.0325"/>
         <param name="ticks_per_rotation" type="int" value="1632"/>

@@ -5,10 +5,10 @@ import unittest
 
 import rospy
 
-from b2.msg import Proximity
+from b2_base.msg import Proximity
 
 
-PKG = 'b2'
+PKG = 'b2_base'
 NAME = 'base_node_test'
 
 DEFAULT_PROXIMITY_TOPIC = "ir_sensors/proximity"

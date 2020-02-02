@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-PKG_DIR=`rospack find b2`
+PKG_DIR=`rospack find b2_base`
 
 echo
 echo "============================"
@@ -15,6 +15,6 @@ echo "============================"
 echo "     Running Node Tests     "
 echo "============================"
 echo
-rostest b2 base.test
-rostest b2 sensors.test
-rostest b2 pilot.test
+rostest b2_base base.test
+rostest b2_base sensors.test
+rostest b2_base pilot.test

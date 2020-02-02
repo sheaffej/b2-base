@@ -2,7 +2,7 @@ from __future__ import print_function
 
 import rospy
 
-from b2.msg import Proximity
+from b2_base.msg import Proximity
 
 
 class IRSensors:
