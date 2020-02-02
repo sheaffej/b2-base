@@ -48,7 +48,7 @@ RUN mkdir -p ${CODE_MOUNT} \
 && cd ${CODE_MOUNT} \
 && git clone https://github.com/sheaffej/roboclaw_driver.git
 
-COPY . ${CODE_MOUNT}/
+COPY ./b2_base ${CODE_MOUNT}/
 
 RUN mkdir -p ${ROS_WS}/src && \
 	ln -s ${CODE_MOUNT}/b2_base ${ROS_WS}/src/b2_base && \
@@ -59,7 +59,7 @@ RUN mkdir -p ${ROS_WS}/src && \
 
 COPY entrypoint.sh /
 ENTRYPOINT [ "/entrypoint.sh" ]
-CMD [ "sleep", "infinity" ]
+CMD [ "bash" ]
 
 RUN source "/opt/ros/$ROS_DISTRO/setup.bash" && \
 	apt-get update && \
