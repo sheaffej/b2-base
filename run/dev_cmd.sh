@@ -13,5 +13,5 @@ docker run -it --rm \
 --net host \
 --env DISPLAY \
 --env ROS_MASTER_URI \
---mount type=bind,source=$PROJ_DIR,target=$CODE_MOUNT \
+--mount type=bind,source=$PROJ_DIR/b2_base,target=$CODE_MOUNT/b2_base \
 ${DOCKER_IMAGE} $@
