@@ -4,7 +4,7 @@
 -->
     <node name="roboclaw_front" pkg="roboclaw_driver" type="roboclaw_node.py">
         <param name="test_mode" type="bool" value="false"/>
-        <param name="dev_name" type="str" value="/dev/roboclaw_front"/>
+        <param name="dev_name" type="str" value="/dev/ttyACM0"/>
         <param name="baud" type="int" value="115200"/>
         <param name="address" type="int" value="128"/>
         <param name="loop_hz" type="int" value="4"/>
