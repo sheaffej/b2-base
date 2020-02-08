@@ -60,7 +60,7 @@
     <include file="$(find b2_base)/launch/nodes/roboclaw_rear-node.launch" />
     <include file="$(find b2_base)/launch/nodes/base-node.launch" />
     <include file="$(find b2_base)/launch/nodes/ir_sensors-node.launch" />
-    <include file="$(find b2_base)/launch/nodes/pilot-node.launch" />
+    <!-- <include file="$(find b2_base)/launch/nodes/pilot-node.launch" /> -->
     
     <param name="roboclaw_front/test_mode" type="bool" value="false" />
     <param name="roboclaw_rear/test_mode" type="bool" value="false"/>
