@@ -14,10 +14,10 @@ DEFAULT_NODE_NAME = "pilot_node"
 
 # Subscribes
 DEFAULT_PROXIMITY_TOPIC = "ir_sensors/proximity"
-DEFAULT_ODOMETRY_TOPIC = "base_node/odom"
+DEFAULT_ODOMETRY_TOPIC = "odom"
 
 # Publishes
-DEFAULT_CMD_TOPIC = "base_node/cmd_vel"
+DEFAULT_CMD_TOPIC = "cmd_vel"
 
 DEFAULT_LOOP_HZ = 5                  # hertz
 DEFAULT_MAX_FWD_SPEED = 0.5           # m/sec

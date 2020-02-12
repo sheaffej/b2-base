@@ -13,13 +13,13 @@ from b2_logic.nodes.base import BaseNode
 DEFAULT_NODE_NAME = "base_node"
 
 # Subscribes
-DEFAULT_CMD_VEL_TOPIC = "~cmd_vel"
+DEFAULT_CMD_VEL_TOPIC = "cmd_vel"
 DEFAULT_ROBOCLAW_FRONT_STATS_TOPIC = "roboclaw_front/stats"
 DEFAULT_ROBOCLAW_REAR_STATS_TOPIC = "roboclaw_rear/stats"
 
 # Publishes
 DEFAULT_SPEED_CMD_TOPIC = "roboclaw/speed_command"
-DEFAULT_ODOM_TOPIC = "~odom"
+DEFAULT_ODOM_TOPIC = "odom"
 
 # Default Parameters
 DEFAULT_LOOP_HZ = 10  # hertz
@@ -29,7 +29,7 @@ DEFAULT_TICKS_PER_ROTATION = 48 * 34
 DEFAULT_MAX_QPPS = 3700
 DEFAULT_MAX_ACCEL = 20000
 DEFAULT_MAX_DRIVE_SECS = 1
-DEFAULT_ODOM_FRAME_ID = "world"
+DEFAULT_ODOM_FRAME_ID = "odom"
 DEFAULT_BASE_FRAME_ID = "base_link"
 DEFAULT_DEADMAN_SECS = 1
 

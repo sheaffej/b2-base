@@ -6,13 +6,13 @@
 
     <node name="ir_sensors" pkg="b2_base" type="sensors_node.py">
         <param name="test_mode" type="bool" value="false"/>
-        <param name="proximity_topic" type="str" value="ir_sensors/proximity"/>
+        <param name="proximity_topic" type="str" value="~/proximity"/>
         <param name="pub_hz" type="int" value="10"/>
-        <param name="~num_adc_channels" type="int" value="1"/>
-        <param name="~vref" type="double" value="5.0"/>
-        <param name="~min_adc_val" type="int" value="0"/>
-        <param name="~max_adc_val" type="int" value="1023"/>
-        <param name="~proximity_distance" type="double" value="0.30"/>
+        <param name="num_adc_channels" type="int" value="1"/>
+        <param name="vref" type="double" value="5.0"/>
+        <param name="min_adc_val" type="int" value="0"/>
+        <param name="max_adc_val" type="int" value="1023"/>
+        <param name="proximity_distance" type="double" value="0.30"/>
     </node>
 
 </launch>

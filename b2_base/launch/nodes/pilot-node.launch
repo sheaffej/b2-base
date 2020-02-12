@@ -12,9 +12,9 @@
         <param name="angular_k" type="double" value="1.0"/>
         <param name="turn_degrees" type="int" value="90"/>
         <param name="turn_degree_tolerance" type="int" value="5"/>
-        <param name="cmd_topic" type="str" value="base_node/cmd_vel"/>
+        <param name="cmd_topic" type="str" value="cmd_vel"/>
         <param name="proximity_topic" type="str" value="ir_sensors/proximity"/>
-        <param name="odom_topic" type="str" value="base_node/odom"/>
+        <param name="odom_topic" type="str" value="odom"/>
     </node>
 
 </launch>

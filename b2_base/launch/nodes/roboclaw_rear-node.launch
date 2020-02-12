@@ -21,7 +21,7 @@
         <param name="deadman_secs" type="int" value="$(arg deadman_secs)"/>
  
         <param name="speed_cmd_topic" type="str" value="$(arg speed_cmd_topic)"/>
-        <param name="stats_topic" type="str" value="$(arg status_topic)"/>
+        <param name="stats_topic" type="str" value="$(arg stats_topic)"/>
     </node>
 
 </launch>

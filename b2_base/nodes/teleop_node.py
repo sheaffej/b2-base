@@ -9,7 +9,7 @@ from sensor_msgs.msg import Joy
 DEFAULT_NODE_NAME = "teleop_node"
 
 # Publishes
-DEFAULT_CMD_TOPIC = "base_node/cmd_vel"
+DEFAULT_CMD_TOPIC = "cmd_vel"
 
 DEFAULT_PUB_HZ = 10
 DEFAULT_MAX_LINEAR_SPEED = 0.1  # m/sec
