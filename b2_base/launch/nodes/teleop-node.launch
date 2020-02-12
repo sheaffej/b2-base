@@ -11,7 +11,7 @@
     <node name="teleop_node" pkg="b2" type="teleop_node.py">
         <param name="max_linear" type="double" value="1.0"/>
         <param name="max_angular" type="double" value="6.3"/>
-        <param name="cmd_vel" type="str" value="cmd_vel"/>
+        <param name="cmd_vel" type="str" value="/cmd_vel"/>
     </node>
 
 </launch>
