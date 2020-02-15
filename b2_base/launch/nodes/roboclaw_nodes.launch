@@ -1,21 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
-    This is used for node-level testing of the base_node.
-    It lauches the base node, roboclaw stub, and the testing node.
+    This is used to launch both roboclaw nodes.
 -->
 <launch>
 
-
-    <!-- <include file="$(find b2_base)/launch/nodes/roboclaw_nodes.launch">
-        <arg name="test_mode"       value="true" />
-    </include> -->
-
-    <arg name="name"            default="roboclaw_front"          />
-    <arg name="dev_name"        default="/dev/ttyACM0"            />
-    <arg name="speed_cmd_topic" default="/roboclaw/speed_command" />
-    <arg name="stats_topic"     default="~/stats"                 />
-
-    <arg name="test_mode"                   default="true"/>
+    <arg name="test_mode"                   default="false"/>
 
     <include file="$(find roboclaw_driver)/launch/roboclaw.launch">
         <arg name="name"            value="roboclaw_front"          />
@@ -31,10 +20,5 @@
         <arg name="stats_topic"     value="~/stats"                 />
         <arg name="test_mode"       value="$(arg test_mode)"        />
     </include>
-
-    <test test-name="base_node_test" pkg="b2_base" type="test_base_node.py">
-        <param name="cmd_vel_topic" type="str" value="/base_node/cmd_vel"/>
-        <param name="odom_topic" type="str" value="/base_node/odom"/>
-    </test>
 
 </launch>
