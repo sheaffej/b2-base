@@ -6,35 +6,31 @@
 <launch>
 
 
-    <!-- <include file="$(find b2_base)/launch/nodes/roboclaw_nodes.launch">
+    <include file="$(find b2_base)/launch/nodes/roboclaw_nodes.launch">
         <arg name="test_mode"       value="true" />
-    </include> -->
+    </include>
+    <include file="$(find b2_base)/launch/nodes/base_node.launch" />
 
-    <arg name="name"            default="roboclaw_front"          />
-    <arg name="dev_name"        default="/dev/ttyACM0"            />
-    <arg name="speed_cmd_topic" default="/roboclaw/speed_command" />
-    <arg name="stats_topic"     default="~/stats"                 />
-
-    <arg name="test_mode"                   default="true"/>
+    <!-- <arg name="test_mode"                   default="true"/>
 
     <include file="$(find roboclaw_driver)/launch/roboclaw.launch">
         <arg name="name"            value="roboclaw_front"          />
         <arg name="dev_name"        value="/dev/ttyACM0"            />
         <arg name="speed_cmd_topic" value="/roboclaw/speed_command" />
-        <arg name="stats_topic"     value="~/stats"                 />
+        <arg name="stats_topic"     value="roboclaw_front/stats"                 />
         <arg name="test_mode"       value="$(arg test_mode)"        />
     </include>
     <include file="$(find roboclaw_driver)/launch/roboclaw.launch">
         <arg name="name"            value="roboclaw_rear"           />
         <arg name="dev_name"        value="/dev/ttyACM1"            />
         <arg name="speed_cmd_topic" value="/roboclaw/speed_command" />
-        <arg name="stats_topic"     value="~/stats"                 />
+        <arg name="stats_topic"     value="roboclaw_rear/stats"                 />
         <arg name="test_mode"       value="$(arg test_mode)"        />
-    </include>
+    </include> -->
 
     <test test-name="base_node_test" pkg="b2_base" type="test_base_node.py">
-        <param name="cmd_vel_topic" type="str" value="/base_node/cmd_vel"/>
-        <param name="odom_topic" type="str" value="/base_node/odom"/>
+        <param name="cmd_vel_topic" type="str" value="/cmd_vel"/>
+        <param name="odom_topic" type="str" value="/odom"/>
     </test>
 
 </launch>

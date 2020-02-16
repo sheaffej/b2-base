@@ -5,9 +5,12 @@ IMAGE_NAME="sheaffej/b2-base"
 # CONTAINER_NAME="b2-base-tests"
 PKG_DIR="/ros/src/b2_base"
 
-MYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+MYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+PROJ_DIR=$MYDIR/..  # Directory containing the cloned git repos
+CODE_MOUNT="/workspaces"
+
 UNIT=""
-VOLUME="$VOLUME"
+VOLUME="--mount type=bind,source=$PROJ_DIR,target=$CODE_MOUNT/b2-base"
 COVERALLS=""
 TRAVIS_ENV=""
 
@@ -50,6 +53,7 @@ if [[ $UNIT == 'unit' ]]; then
     exit
 fi
 
+
 echo
 echo "============================"
 echo "     Running Node Tests     "
@@ -57,4 +61,4 @@ echo "============================"
 echo
 docker run --rm $VOLUME $IMAGE_NAME rostest b2_base base.test
 docker run --rm $VOLUME $IMAGE_NAME rostest b2_base sensors.test
-docker run --rm $VOLUME $IMAGE_NAME rostest b2_base pilot.test
+# docker run --rm $VOLUME $IMAGE_NAME rostest b2_base pilot.test

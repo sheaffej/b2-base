@@ -15,8 +15,8 @@ from b2_logic.odometry_helpers import yaw_from_odom_message, normalize_theta
 PKG = 'b2_base'
 NAME = 'base_node_test'
 
-DEFAULT_TWIST_TOPIC = "/base_node/cmd_vel"
-DEFAULT_ODOM_TOPIC = "/base_node/odom"
+DEFAULT_TWIST_TOPIC = "/cmd_vel"
+DEFAULT_ODOM_TOPIC = "/odom"
 DEFAULT_LOOP_HZ = 10
 
 
