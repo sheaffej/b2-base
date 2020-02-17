@@ -62,11 +62,11 @@ CMD [ "bash" ]
 RUN echo "source /entrypoint.sh" >> /root/.bashrc && \
 	echo "source /root/.bashrc" >> /root/.bash_profile
 
-RUN cd ${ROS_WS} \
-&& apt update \
-&& rosdep update \
-&& rosdep install --from-paths src --ignore-src --rosdistro=${ROS_DISTRO} -y \
-&& rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+# RUN cd ${ROS_WS} \
+# && apt update \
+# && rosdep update \
+# && rosdep install --from-paths src --ignore-src --rosdistro=${ROS_DISTRO} -y \
+# && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 RUN source "/opt/ros/$ROS_DISTRO/setup.bash" \
 && cd $ROS_WS && catkin_make \
