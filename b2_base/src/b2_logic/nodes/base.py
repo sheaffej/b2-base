@@ -1,5 +1,6 @@
 from __future__ import print_function
 import threading
+import datetime as dt
 
 import rospy
 
@@ -38,7 +39,7 @@ class BaseNode:
 
         # Last time we received a Twist message from the Pilot
         # If we don't get a message after deadman_secs, we stop the base
-        self._last_cmd_vel_time = None  # type: rospy.Time
+        self._last_cmd_vel_time = rospy.Time()  # type: rospy.Time
 
         # Init Odometry state
         self._world_x = 0.0
@@ -74,6 +75,7 @@ class BaseNode:
             self._m1_rear_enc_prev = self._roboclaw_rear_stats.m1_enc_val
             self._m2_rear_enc_prev = self._roboclaw_rear_stats.m2_enc_val
         self._last_odom_time = rospy.get_rostime()
+        self._last_cmd_vel_time = rospy.get_rostime()
 
         try:
             while not rospy.is_shutdown():
@@ -90,10 +92,17 @@ class BaseNode:
             :param Twist msg: Twist command velocity message
         """
         with self._cmd_vel_lock:
-            self._x_linear_cmd = msg.linear.x
-            self._z_angular_cmd = msg.angular.z
-            self._last_cmd_vel_time = rospy.get_rostime()
-            rospy.logdebug("CMD Vel - X: {}  |  Z: {}".format(msg.linear.x, msg.angular.z))
+
+            if ((self._last_cmd_vel_time - rospy.get_rostime()).to_sec() < 1.0
+                and msg.linear.x == self._x_linear_cmd
+                and msg.angular.z == self._z_angular_cmd):
+                rospy.logdebug("Cmd Vel received, but no change in values")
+
+            else:
+                self._x_linear_cmd = msg.linear.x
+                self._z_angular_cmd = msg.angular.z
+                self._last_cmd_vel_time = rospy.get_rostime()
+                rospy.logdebug("CMD Vel - X: {}  |  Z: {}".format(msg.linear.x, msg.angular.z))
 
     def roboclaw_stats_callback(self, stats, callback_args):
         """Called by the Roboclaw Stats message subscriber

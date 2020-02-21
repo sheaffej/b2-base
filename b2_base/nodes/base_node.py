@@ -67,7 +67,7 @@ if __name__ == "__main__":
                     base_frame_id, world_frame_id,
                     speed_cmd_pub, odom_pub, tf_broadcaster)
 
-    # Joy message Subscriber
+    # Twist message Subscriber
     rospy.Subscriber(
         rospy.get_param("~cmd_vel_topic", DEFAULT_CMD_VEL_TOPIC),
         Twist,

@@ -19,6 +19,9 @@ DEFAULT_TWIST_TOPIC = "/cmd_vel"
 DEFAULT_ODOM_TOPIC = "/odom"
 DEFAULT_LOOP_HZ = 10
 
+XY_TEST_ALLOWED_DIFF = 0.020
+TH_TEST_ALLOWED_DIFF = math.pi / 10
+
 
 class TestBaseNode(unittest.TestCase):
 
@@ -102,16 +105,16 @@ class TestBaseNode(unittest.TestCase):
             world_x_exp, world_y_exp, world_theta_exp
         )
 
-    # def test_multi_movement(self):
-    #     # self.test_drive_reverse()
-    #     self.test_drive_forward()
-    #     self.test_turn_left()
-    #     self.test_drive_forward()
-    #     self.test_turn_right()
-    #     self.test_drive_reverse()
-    #     self.test_turn_right()
-    #     self.test_drive_forward()
-    #     self.test_turn_left()
+    def test_multi_movement(self):
+        # self.test_drive_reverse()
+        self.test_drive_forward()
+        self.test_turn_left()
+        self.test_drive_forward()
+        self.test_turn_right()
+        self.test_drive_reverse()
+        self.test_turn_right()
+        self.test_drive_forward()
+        self.test_turn_left()
 
     def test_forward_left(self):
         self.test_drive_forward()
@@ -192,13 +195,20 @@ class TestBaseNode(unittest.TestCase):
 
         print("Actual: ({}, {}, {}), Expected: ({}, {}, {})".format(
             x_actual, y_actual, th_actual, x_exp_adj, y_exp_adj, theta_exp_adj))
-        self.assertAlmostEqual(x_actual, x_exp_adj, places=2)
-        self.assertAlmostEqual(y_actual, y_exp_adj, places=2)
-        self.assertAlmostEqual(
-            normalize_theta(th_actual),
-            normalize_theta(theta_exp_adj),
-            places=1
+        self.assertLessEqual(abs(x_actual-x_exp_adj), XY_TEST_ALLOWED_DIFF)
+        self.assertLessEqual(abs(y_actual-y_exp_adj), XY_TEST_ALLOWED_DIFF)
+        self.assertLessEqual(
+            abs(normalize_theta(th_actual)-normalize_theta(theta_exp_adj)),
+            TH_TEST_ALLOWED_DIFF
         )
+
+        # self.assertAlmostEqual(x_actual, x_exp_adj, places=XY_ASSERT_DECIMAL_PLACES)
+        # self.assertAlmostEqual(y_actual, y_exp_adj, places=XY_ASSERT_DECIMAL_PLACES)
+        # self.assertAlmostEqual(
+        #     normalize_theta(th_actual),
+        #     normalize_theta(theta_exp_adj),
+        #     places=TH_ASSERT_DECIMAL_PLACES
+        # )
 
 
 def transform_pose_2d(x, y, theta, x_offset, y_offset, theta_offset):

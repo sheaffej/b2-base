@@ -191,7 +191,6 @@ catkin_install_python(
   PROGRAMS
   nodes/base_node.py
   nodes/sensors_node.py
-  nodes/teleop_node.py
   nodes/pilot_node.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
