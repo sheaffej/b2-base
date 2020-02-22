@@ -7,6 +7,7 @@
     <arg name="name"                        default="base_node"/>
     <arg name="wheel_dist"                  default="0.180"/>
     <arg name="wheel_radius"                default="0.0325"/>
+    <arg name="wheel_slip_factor"           default="0.5"/>
     <arg name="ticks_per_rotation"          default="1632"/>
     <arg name="max_drive_secs"              default="1"/>
     <arg name="max_qpps"                    default="5000"/>
@@ -24,6 +25,7 @@
     <node name="base_node" pkg="b2_base" type="base_node.py">
         <param name="wheel_dist" type="double" value="$(arg wheel_dist)"/>
         <param name="wheel_radius" type="double" value="$(arg wheel_radius)"/>
+        <param name="wheel_slip_factor" type="double" value="$(arg wheel_slip_factor)"/>
         <param name="ticks_per_rotation" type="int" value="$(arg ticks_per_rotation)"/>
         <param name="max_drive_secs" type="int" value="$(arg max_drive_secs)"/>
         <param name="max_qpps" type="int" value="$(arg max_qpps)"/>

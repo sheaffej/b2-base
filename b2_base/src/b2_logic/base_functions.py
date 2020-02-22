@@ -13,8 +13,10 @@ from odometry_helpers import (
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-def calc_create_speed_cmd(x_linear_cmd, z_angular_cmd, wheel_dist,
-                          wheel_radius, ticks_per_rotation, max_drive_secs, max_qpps, max_accel):
+def calc_create_speed_cmd(
+    x_linear_cmd, z_angular_cmd, wheel_dist, wheel_radius,
+    wheel_slip_factor, ticks_per_rotation, max_drive_secs, max_qpps, max_accel
+):
     """Calculate and send motor commands
 
     Parameters:
@@ -22,6 +24,7 @@ def calc_create_speed_cmd(x_linear_cmd, z_angular_cmd, wheel_dist,
         :param double z_angular_cmd: Twist message's angular.z value
         :param double wheel_dist: Distance between wheels (m)
         :param double wheel_radius: Wheel radius (m)
+        :param double wheel_slip_factor: Decimal % of angular motion lost to slip
         :param double ticks_per_radian: Number of encoder ticks per radian of wheel rotation
         :param double max_drive_secs: Maximum seconds drive should run before stopping
         :param int max_accel: Max QPPS of acceleration
@@ -29,26 +32,32 @@ def calc_create_speed_cmd(x_linear_cmd, z_angular_cmd, wheel_dist,
     Returns: The SpeedCommand message
         :rtype: roboclaw.msg.SpeedCommand
     """
+
+    print("Orig Cmd: x: {}, z:{}".format(x_linear_cmd, z_angular_cmd))
+
+
+    # Wheels only slip when turning (i.e. z_angular_cmd > 0) so only increase z_angular_cmd
+    if (wheel_slip_factor > 0.0):
+        z_angular_cmd = z_angular_cmd / wheel_slip_factor
+
+    print("Slip Cmd: x: {}, z:{}".format(x_linear_cmd, z_angular_cmd))
+
+
     right_angular_v = (
         (x_linear_cmd + z_angular_cmd * (wheel_dist / 2.0)) / wheel_radius
     )
     left_angular_v = (
         (x_linear_cmd - z_angular_cmd * (wheel_dist / 2.0)) / wheel_radius
     )
-    # print("left_angular_v: {}".format(left_angular_v))
 
     ticks_per_radian = ticks_per_rotation / (pi * 2)
-    # print("ticks_per_radian: {}".format(ticks_per_radian))
 
     right_qpps_target = right_angular_v * ticks_per_radian
     left_qpps_target = left_angular_v * ticks_per_radian
-    # print("left_qpps_target: {}".format(left_qpps_target))
 
     # Clamp the target QPPS within the max_qpps
     right_qpps_target = max(-max_qpps, min(right_qpps_target, max_qpps))
     left_qpps_target = max(-max_qpps, min(left_qpps_target, max_qpps))
-    # print("right_qpps_target (after clamp): {}".format(right_qpps_target))
-    # print("left_qpps_target (after clamp): {}".format(left_qpps_target))
 
     cmd = SpeedCommand()
     cmd.m1_qpps = right_qpps_target
@@ -60,7 +69,7 @@ def calc_create_speed_cmd(x_linear_cmd, z_angular_cmd, wheel_dist,
 
 def calc_base_frame_velocity_from_encoder_diffs(
     m1_enc_diff, m2_enc_diff,
-    ticks_per_rotation, wheel_radius, wheel_dist,
+    ticks_per_rotation, wheel_radius, wheel_dist, wheel_slip_factor,
     begin_odom_time, end_odom_time
 ):
 
@@ -73,18 +82,21 @@ def calc_base_frame_velocity_from_encoder_diffs(
     # print("m1_qpps_actual: {} / {} = {}".format(m1_enc_diff, time_delta_secs, m1_qpps_actual))
     # print("m2_qpps_actual: {} / {} = {}".format(m2_enc_diff, time_delta_secs, m2_qpps_actual))
 
+    # Calculate how fast the wheel is rotating around the axel
     left_angular_v, right_angular_v = _calc_wheel_angular_velocity(
         m1_qpps_actual, m2_qpps_actual, ticks_per_rotation)
     # print("right_angular_v: {}".format(right_angular_v))
     # print("left_angular_v: {}".format(left_angular_v))
 
+    # Then calculate how fast the wheel is traveling in a line
     left_linear_v, right_linear_v = _calc_wheel_linear_velocity(
         left_angular_v, right_angular_v, wheel_radius)
     # print("right_linear_v: {}".format(right_linear_v))
     # print("left_linear_v: {}".format(left_linear_v))
 
     x_linear_v, y_linear_v, z_angular_v = _calc_base_frame_velocity(
-        left_linear_v, right_linear_v, wheel_dist)
+        left_linear_v, right_linear_v, wheel_dist, wheel_slip_factor)
+
     return x_linear_v, y_linear_v, z_angular_v
 
 
@@ -147,8 +159,12 @@ def _calc_wheel_linear_velocity(left_angular_v, right_angular_v, wheel_radius):
     return (left_linear_v, right_linear_v)
 
 
-def _calc_base_frame_velocity(left_linear_v, right_linear_v, wheel_dist):
+def _calc_base_frame_velocity(left_linear_v, right_linear_v, wheel_dist, wheel_slip_factor):
     x_linear_v = (right_linear_v + left_linear_v) / 2.0
     y_linear_v = 0  # Because the robot is nonholonomic
     z_angular_v = (right_linear_v - left_linear_v) / float(wheel_dist)
+
+    # Reduce z_angular_v to compensate for wheel slip in turns
+    z_angular_v = z_angular_v * wheel_slip_factor
+
     return (x_linear_v, y_linear_v, z_angular_v)

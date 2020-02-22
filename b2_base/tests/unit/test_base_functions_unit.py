@@ -30,6 +30,7 @@ class TestBaseFunctions(unittest.TestCase):
         # Robot parameters
         self.wheel_dist = 0.220
         self.wheel_radius = 0.0325
+        self.wheel_slip_factor = 0.5 # Decimal % of angular motion lost to slip
         # self.ticks_per_radian = 48 * 34
         self.ticks_per_rotation = 1632
         self.base_frame_id = "base_frame"
@@ -44,10 +45,10 @@ class TestBaseFunctions(unittest.TestCase):
             # (x_linear, z_angular, m1_expected, m2_expected)
             # x is m/sec, and z is radians/sec
             (0.1, 0.0, 799, 799),
-            (0.0, 0.1, 88, -88),
-            (0.05, 0.5, 839, -40),
+            (0.0, 0.1, 88/self.wheel_slip_factor, -88/self.wheel_slip_factor),
+            # (0.05, 0.5, 839, -40),
             (1.0, 0.0, self.max_qpps, self.max_qpps),
-            (0.0, math.pi/4, 690, -690),
+            (0.0, math.pi/4, 690.5/self.wheel_slip_factor, -690.5/self.wheel_slip_factor),
             (0.5, 0.0, 3996, 3996),
         ]
         print()
@@ -58,6 +59,7 @@ class TestBaseFunctions(unittest.TestCase):
                 z_angular_cmd,
                 self.wheel_dist,
                 self.wheel_radius,
+                self.wheel_slip_factor,
                 self.ticks_per_rotation,
                 self.max_drive_secs,
                 self.max_qpps,
@@ -88,23 +90,23 @@ class TestBaseFunctions(unittest.TestCase):
         tests = [
             # Drive straight at 1000 QPPS
             (0.0, 0.0, 0.0, rospy.Time(0), 1000, 1000, 1,
-                0.125, 0.0, 0.0, 0.125, 0.0, 0.0),
+                0.125, 0.0, 0.0 * self.wheel_slip_factor, 0.125, 0.0, 0.0 * self.wheel_slip_factor),
 
             # Turn left and forward
             (0.0, 0.0, 0.0, rospy.Time(0), 1000, 500, 1,
-                0.094, 0.0, 0.284, 0.094, 0.0, 0.284),
+                0.094, 0.0, 0.284*self.wheel_slip_factor, 0.094, 0.0, 0.284*self.wheel_slip_factor),
 
             # Drive straight at 3700 QPPS
             (0.0, 0.0, 0.0, rospy.Time(0), 3700, 3700, 1,
-                0.463, 0.0, 0.0, 0.463, 0.0, 0.0),
+                0.463, 0.0, 0.0*self.wheel_slip_factor, 0.463, 0.0, 0.0*self.wheel_slip_factor),
 
             # Drive right and forward, starting not at the origin
             (3.0, 4.0, math.pi/4, rospy.Time(0), 700, 2800, 0.5,
-                3.077, 4.077, 0.188, 0.155, 0.155, -1.194),
+                3.077, 4.077, 0.485, 0.155, 0.155, -1.194*self.wheel_slip_factor),
 
             # Same as above, but starting at a non-zero time
             (3.0, 4.0, math.pi/4, rospy.Time(12000), 700, 2800, 0.5,
-                3.077, 4.077, 0.188, 0.155, 0.155, -1.194),
+                3.077, 4.077, 0.485, 0.155, 0.155, -1.194*self.wheel_slip_factor),
 
             # # Rotate right 90 degrees
             # (0.0, 0.0, 0.0, rospy.Time(0), 1000, 1000, 1,
@@ -128,7 +130,7 @@ class TestBaseFunctions(unittest.TestCase):
 
             x_linear_v, y_linear_v, z_angular_v = calc_base_frame_velocity_from_encoder_diffs(
                 m1_enc_diff, m2_enc_diff, self.ticks_per_rotation,
-                self.wheel_radius, self.wheel_dist,
+                self.wheel_radius, self.wheel_dist, self.wheel_slip_factor,
                 last_odom_time, t2
             )
             print("Base velocities ({}, {}, {})".format(x_linear_v, y_linear_v, z_angular_v))
@@ -177,14 +179,15 @@ class TestBaseFunctions(unittest.TestCase):
              exp_linear_x, exp_linear_y, exp_angular_z) in tests:
 
             print()
-            print("CMD [x:{}, w:{}] for {} secs".format(linear_x, angular_z, secs))
+            print("CMD [x:{}, z:{}] for {} secs".format(linear_x, angular_z, secs))
 
             for i in range(int(secs / delta_secs)):
                 t2 = last_odom_time + rospy.Duration(secs=delta_secs)
 
                 cmd = calc_create_speed_cmd(
                     linear_x, angular_z,
-                    self.wheel_dist, self.wheel_radius, self.ticks_per_rotation,
+                    self.wheel_dist, self.wheel_radius, self.wheel_slip_factor,
+                    self.ticks_per_rotation,
                     self.max_drive_secs, self.max_qpps, self.max_accel
                 )
 
@@ -195,9 +198,13 @@ class TestBaseFunctions(unittest.TestCase):
 
                 x_linear_v, y_linear_v, z_angular_v = calc_base_frame_velocity_from_encoder_diffs(
                     m1_enc_diff, m2_enc_diff, self.ticks_per_rotation,
-                    self.wheel_radius, self.wheel_dist,
+                    self.wheel_radius, self.wheel_dist, self.wheel_slip_factor,
                     last_odom_time, t2
                 )
+
+                print("x-vel: {}, y-vel: {}, z-vel: {}".format(
+                    x_linear_v, y_linear_v, z_angular_v
+                ))
 
                 odom = calc_odometry_from_base_velocity(
                     x_linear_v, y_linear_v, z_angular_v,
@@ -212,6 +219,9 @@ class TestBaseFunctions(unittest.TestCase):
                 last_odom_time = t2
                 print("x: {}, y: {}, 0: {}, t2: {}".format(
                     world_x, world_y, world_theta, t2))
+
+
+                print()
 
             self._compare_odometry(
                 odom,
@@ -348,32 +358,32 @@ class TestBaseFunctions(unittest.TestCase):
             self.assertAlmostEqual(actual_left_linear_v, exp_left_linear_v, 3)
 
     def test_calc_base_frame_velocity(self):
-        # (left_linear_v, right_linear_v, wheel_dist,
+        # (left_linear_v, right_linear_v, wheel_dist, wheel_slip_factor,
         #  exp_x_linear_v, exp_y_linear_v, exp_z_angular_v)
         tests = [
             # Straight forward case
-            (1.0, 1.0, 0.1,
+            (1.0, 1.0, 0.1, 0.5,
              1.0, 0.0, 0.0),
             # Rotate right in place case
-            (0.1, -0.1, 0.1,
-             0.0, 0.0, -2.0),
+            (0.1, -0.1, 0.1, 0.5,
+             0.0, 0.0, -1.0),
             # Rotate left in place case
-            (-0.1, 0.1, 0.1,
-             0.0, 0.0, 2.0),
+            (-0.1, 0.1, 0.1, 0.5,
+             0.0, 0.0, 1.0),
             # Right turn circle case
-            (1.0, 0.5, 0.1,
-             0.75, 0.0, -5.0),
+            (1.0, 0.5, 0.1, 0.5,
+             0.75, 0.0, -2.5),
             # Left turn circle case
-            (0.5, 1.0, 0.1,
-             0.75, 0.0, 5.0),
+            (0.5, 1.0, 0.1, 0.5,
+             0.75, 0.0, 2.5),
         ]
 
         for (
-            left_linear_v, right_linear_v, wheel_dist,
+            left_linear_v, right_linear_v, wheel_dist, wheel_slip_factor,
             exp_x_linear_v, exp_y_linear_v, exp_z_angular_v
         ) in tests:
             x_linear_v, y_linear_v, z_angular_v = _calc_base_frame_velocity(
-                left_linear_v, right_linear_v, wheel_dist)
+                left_linear_v, right_linear_v, wheel_dist, wheel_slip_factor)
             print()
             print("Left linear_v: {}, right linear_v: {}, wheel dist: {}".format(
                 left_linear_v, right_linear_v, wheel_dist))
@@ -431,28 +441,30 @@ class TestBaseFunctions(unittest.TestCase):
             self.assertAlmostEqual(world_z_velocity, exp_world_z_velocity, 3)
 
     def test_calc_base_frame_velocity_from_encoder_diffs(self):
-        # (m1_enc_diff, m2_enc_diff, ticks_per_rotation, wheel_radius, wheel_dist, duration_secs,
+        # (m1_enc_diff, m2_enc_diff, ticks_per_rotation, wheel_radius, wheel_dist,
+        #  wheel_slip_factor, duration_secs,
         #  exp_x_linear_v, exp_y_linear_v, exp_z_angular_v)
         tests = [
             # One wheel distance forward in 1/2 sec
-            (1632, 1632, 1632, 0.0325, 0.220, 0.5,
+            (1632, 1632, 1632, 0.0325, 0.220, 0.5, 0.5,
              0.408407045, 0.0, 0.0),
             # One wheel distance forward in 1.0 sec
-            (1632, 1632, 1632, 0.0325, 0.220, 1.0,
+            (1632, 1632, 1632, 0.0325, 0.220, 0.5, 1.0,
              0.2042035225, 0.0, 0.0),
             # Rotate in place one wheel distance in 1.0 sec
-            (1632, -1632, 1632, 0.0325, 0.220, 1.0,
-             0.0, 0.0, 0.2042035225 / (0.220 / 2)),  # wheel roll dist / 1/2 wheel base (R)
+            (1632, -1632, 1632, 0.0325, 0.220, 0.5, 1.0,
+             0.0, 0.0, 0.2042035225 / (0.220 / 2) * 0.5),  # wheel roll dist / 1/2 wheel base (R)
 
         ]
 
         for (
             m1_enc_diff, m2_enc_diff, ticks_per_rotation, wheel_radius,
-            wheel_dist, duration_secs, exp_x_linear_v, exp_y_linear_v, exp_z_angular_v
+            wheel_dist, wheel_slip_factor, duration_secs, exp_x_linear_v,
+            exp_y_linear_v, exp_z_angular_v
         ) in tests:
             x_linear_v, y_linear_v, z_angular_v = calc_base_frame_velocity_from_encoder_diffs(
                 m1_enc_diff, m2_enc_diff, ticks_per_rotation, wheel_radius, wheel_dist,
-                rospy.Time(0), rospy.Time(duration_secs)
+                wheel_slip_factor, rospy.Time(0), rospy.Time(duration_secs)
             )
             print()
             print("m1_enc_diff: {}, m2_enc_diff: {}, duration_secs: {}".format(

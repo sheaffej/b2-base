@@ -14,13 +14,14 @@ from b2_logic.base_functions import (
 
 
 class BaseNode:
-    def __init__(self, wheel_dist, wheel_radius, ticks_per_rotation,
+    def __init__(self, wheel_dist, wheel_radius, wheel_slip_factor, ticks_per_rotation,
                  max_drive_secs, deadman_secs, max_qpps, max_accel,
                  base_frame_id, world_frame_id,
                  speed_cmd_pub, odom_pub, tf_broadcaster):
 
         self._wheel_dist = wheel_dist
         self._wheel_radius = wheel_radius
+        self._wheel_slip_factor = wheel_slip_factor
         self._ticks_per_rotation = ticks_per_rotation
         self._max_drive_secs = max_drive_secs
         self._deadman_secs = deadman_secs
@@ -138,7 +139,7 @@ class BaseNode:
 
         cmd = calc_create_speed_cmd(
             x_linear_cmd, z_angular_cmd,
-            self._wheel_dist, self._wheel_radius,
+            self._wheel_dist, self._wheel_radius, self._wheel_slip_factor,
             self._ticks_per_rotation, self._max_drive_secs, self._max_qpps, self._max_accel
         )
         self._speed_cmd_pub.publish(cmd)
@@ -178,8 +179,8 @@ class BaseNode:
             nowtime = max(front_stamp, rear_stamp)
 
         x_linear_v, y_linear_v, z_angular_v = calc_base_frame_velocity_from_encoder_diffs(
-            m1_enc_diff, m2_enc_diff,
-            self._ticks_per_rotation, self._wheel_radius, self._wheel_dist,
+            m1_enc_diff, m2_enc_diff, self._ticks_per_rotation,
+            self._wheel_radius, self._wheel_dist, self._wheel_slip_factor,
             self._last_odom_time, nowtime
         )
 

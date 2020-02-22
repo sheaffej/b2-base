@@ -6,7 +6,7 @@
 
     <arg name="name"                default="ir_sensors"/>
     <arg name="test_mode"           default="false"/>
-    <arg name="proximity_topic"     default="~/proximity"/>
+    <arg name="proximity_topic"     default="$(arg name)/proximity"/>
     <arg name="pub_hz"              default="10"/>
     <arg name="num_adc_channels"    default="1"/>
     <arg name="vref"                default="5.0"/>

@@ -25,6 +25,7 @@ DEFAULT_ODOM_TOPIC = "odom"
 DEFAULT_LOOP_HZ = 10  # hertz
 DEFAULT_WHEEL_DIST = 0.180  # meters
 DEFAULT_WHEEL_RADIUS = 0.0325  # meters
+DEFAULT_WHEEL_SLIP_FACTOR = 0.5  # Decimal % of angular motion lost to slip
 DEFAULT_TICKS_PER_ROTATION = 48 * 34
 DEFAULT_MAX_QPPS = 3700
 DEFAULT_MAX_ACCEL = 20000
@@ -40,6 +41,7 @@ if __name__ == "__main__":
 
     wheel_dist = rospy.get_param("~wheel_dist", DEFAULT_WHEEL_DIST)
     wheel_radius = rospy.get_param("~wheel_radius", DEFAULT_WHEEL_RADIUS)
+    wheel_slip_factor = rospy.get_param("~wheel_slip_factor", DEFAULT_WHEEL_SLIP_FACTOR)
     ticks_per_rotation = rospy.get_param("~ticks_per_rotation", DEFAULT_TICKS_PER_ROTATION)
     max_drive_secs = rospy.get_param("~max_drive_secs", DEFAULT_MAX_DRIVE_SECS)
     deadman_secs = rospy.get_param("~deadman_secs", DEFAULT_DEADMAN_SECS)
@@ -62,7 +64,7 @@ if __name__ == "__main__":
     )
     tf_broadcaster = tf.broadcaster.TransformBroadcaster()
 
-    node = BaseNode(wheel_dist, wheel_radius, ticks_per_rotation,
+    node = BaseNode(wheel_dist, wheel_radius, wheel_slip_factor, ticks_per_rotation,
                     max_drive_secs, deadman_secs, max_qpps, max_accel,
                     base_frame_id, world_frame_id,
                     speed_cmd_pub, odom_pub, tf_broadcaster)

@@ -51,6 +51,7 @@ class TestBaseLoop(unittest.TestCase):
         print()
         wheel_dist = 0.220
         wheel_radius = 65 / 1000.0 / 2.0  # 65mm dia wheels
+        wheel_slip_factor = 0.5 # Decimal % of angular motion lost from wheel slip
         ticks_per_rotation = 48 * 34
         max_drive_secs = 1
         deadman_secs = 1
@@ -64,7 +65,7 @@ class TestBaseLoop(unittest.TestCase):
         self.tf_broadcaster = MockTfBroadcaster()
 
         self.base = BaseNode(
-            wheel_dist, wheel_radius, ticks_per_rotation,
+            wheel_dist, wheel_radius, wheel_slip_factor, ticks_per_rotation,
             max_drive_secs, deadman_secs, max_qpps, max_accel,
             base_frame_id, world_frame_id,
             self.speed_cmd_pub, self.odom_pub, self.tf_broadcaster
