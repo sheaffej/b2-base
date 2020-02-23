@@ -32,16 +32,10 @@ def calc_create_speed_cmd(
     Returns: The SpeedCommand message
         :rtype: roboclaw.msg.SpeedCommand
     """
-
-    print("Orig Cmd: x: {}, z:{}".format(x_linear_cmd, z_angular_cmd))
-
-
+    
     # Wheels only slip when turning (i.e. z_angular_cmd > 0) so only increase z_angular_cmd
     if (wheel_slip_factor > 0.0):
         z_angular_cmd = z_angular_cmd / wheel_slip_factor
-
-    print("Slip Cmd: x: {}, z:{}".format(x_linear_cmd, z_angular_cmd))
-
 
     right_angular_v = (
         (x_linear_cmd + z_angular_cmd * (wheel_dist / 2.0)) / wheel_radius
