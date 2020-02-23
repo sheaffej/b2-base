@@ -7,7 +7,7 @@
     <arg name="name"                        default="base_node"/>
     <arg name="wheel_dist"                  default="0.180"/>
     <arg name="wheel_radius"                default="0.0325"/>
-    <arg name="wheel_slip_factor"           default="0.5"/>
+    <arg name="wheel_slip_factor"           default="0.45"/>
     <arg name="ticks_per_rotation"          default="1632"/>
     <arg name="max_drive_secs"              default="1"/>
     <arg name="max_qpps"                    default="5000"/>
