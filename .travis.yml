@@ -1,22 +1,11 @@
-language: python
-python: 3.7
-
 servies: docker
 
-jobs:
-  include:
-    - arch: amd64
-      install: docker build -t b2-base -f Dockerfile .
-    # - arch: arm64
-      # install: docker build -t b2-base -f Dockerfile.arm .
+arch:
+  - amd64
+  - arm64
 
+install:
+  - docker build -t b2-base -f Dockerfile .
 
 script: 
-  - scripts/run_dev_tests.sh nomount coveralls
-
-deploy:
-  - provider: script
-    script: scripts/travis_deploy_dockerhub.sh
-    on:
-      all_branches: true
-      condition: $TRAVIS_BRANCH == "master" || $TRAVIS_BRANCH == "dev"
+  - run/tests.sh nomount coveralls
