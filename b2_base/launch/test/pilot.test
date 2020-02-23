@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    This is used for node-level testing of the base_node.
+    It lauches the base node, roboclaw stub, and the testing node.
+-->
+<launch>
+
+    <include file="$(find b2_base)/launch/nodes/roboclaw_nodes.launch">
+        <arg name="test_mode"       value="true" />
+    </include>
+    <include file="$(find b2_base)/launch/nodes/sensors_node.launch">
+        <arg name="test_mode"       value="true"                   />
+    </include>
+    <include file="$(find b2_base)/launch/nodes/pilot-node.launch" />
+
+    <test test-name="pilot_node_test" pkg="b2_base" type="test_pilot_node.py">
+        <param name="proximity_topic" type="str" value="ir_sensors/proximity"/>
+        <param name="odom_topic" type="str" value="base_node/odom"/>
+    </test>
+
+</launch>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    This is used to launch only the ir_sensors node for on-robot operation.
+-->
+<launch>
+
+    <arg name="name"                default="ir_sensors"/>
+    <arg name="test_mode"           default="false"/>
+    <arg name="proximity_topic"     default="$(arg name)/proximity"/>
+    <arg name="pub_hz"              default="10"/>
+    <arg name="num_adc_channels"    default="1"/>
+    <arg name="vref"                default="5.0"/>
+    <arg name="min_adc_val"         default="0"/>
+    <arg name="max_adc_val"         default="1023"/>
+    <arg name="proximity_distance"  default="0.30"/>
+
+    <node name="$(arg name)" pkg="b2_base" type="sensors_node.py">
+        <param name="test_mode" type="bool" value="$(arg test_mode)"/>
+        <param name="proximity_topic" type="str" value="$(arg proximity_topic)"/>
+        <param name="pub_hz" type="int" value="$(arg pub_hz)"/>
+        <param name="num_adc_channels" type="int" value="$(arg num_adc_channels)"/>
+        <param name="vref" type="double" value="$(arg vref)"/>
+        <param name="min_adc_val" type="int" value="$(arg min_adc_val)"/>
+        <param name="max_adc_val" type="int" value="$(arg max_adc_val)"/>
+        <param name="proximity_distance" type="double" value="$(arg proximity_distance)"/>
+    </node>
+
+</launch>

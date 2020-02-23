@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    This is used to launch only the base node for on-robot operation.
+-->
+<launch>
+
+    <arg name="name"                        default="base_node"/>
+    <arg name="wheel_dist"                  default="0.180"/>
+    <arg name="wheel_radius"                default="0.0325"/>
+    <arg name="wheel_slip_factor"           default="0.45"/>
+    <arg name="ticks_per_rotation"          default="1632"/>
+    <arg name="max_drive_secs"              default="1"/>
+    <arg name="max_qpps"                    default="5000"/>
+    <arg name="max_accel"                   default="10000"/>
+    <arg name="base_frame_id"               default="base_link"/>
+    <arg name="odom_frame_id"               default="odom"/>
+    <arg name="loop_hz"                     default="10"/>
+    <arg name="deadman_secs"                default="10"/>
+    <arg name="cmd_vel_topic"               default="/cmd_vel"/>
+    <arg name="odom_topic"                  default="/odom"/>
+    <arg name="speed_command_topic"         default="roboclaw/speed_command"/>
+    <arg name="roboclaw_front_stats_topic"  default="roboclaw_front/stats"/>
+    <arg name="roboclaw_rear_stats_topic"   default="roboclaw_rear/stats"/>
+
+    <node name="base_node" pkg="b2_base" type="base_node.py">
+        <param name="wheel_dist" type="double" value="$(arg wheel_dist)"/>
+        <param name="wheel_radius" type="double" value="$(arg wheel_radius)"/>
+        <param name="wheel_slip_factor" type="double" value="$(arg wheel_slip_factor)"/>
+        <param name="ticks_per_rotation" type="int" value="$(arg ticks_per_rotation)"/>
+        <param name="max_drive_secs" type="int" value="$(arg max_drive_secs)"/>
+        <param name="max_qpps" type="int" value="$(arg max_qpps)"/>
+        <param name="max_accel" type="int" value="$(arg max_accel)"/>
+        <param name="base_frame_id" type="str" value="$(arg base_frame_id)"/>
+        <param name="odom_frame_id" type="str" value="$(arg odom_frame_id)"/>
+        <param name="loop_hz" type="int" value="$(arg loop_hz)"/>
+        <param name="deadman_secs" type="int" value="$(arg deadman_secs)"/>
+
+	    <param name="cmd_vel_topic" type="str" value="$(arg cmd_vel_topic)"/>
+	    <param name="odom_topic" type="str" value="$(arg odom_topic)"/>
+        <param name="speed_command_topic" type="str" value="$(arg speed_command_topic)"/>
+        <param name="roboclaw_front_stats_topic" type="str" value="$(arg roboclaw_front_stats_topic)"/>
+        <param name="roboclaw_rear_stats_topic" type="str" value="$(arg roboclaw_rear_stats_topic)"/>
+    </node>
+
+</launch>

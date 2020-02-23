@@ -1,5 +1,5 @@
 {
-	"name": "B2 Robot Docker",
+	"name": "B2-Base Docker",
 	"context": "..",
 	"dockerFile": "../Dockerfile",
 	"image": "b2-base",
@@ -14,7 +14,7 @@
 		"python.autoComplete.extraPaths": [
 			"/ros/devel/lib/python2.7/dist-packages",
 			"/opt/ros/melodic/lib/python2.7/dist-packages",
-			"/workspaces/b2_project/apkg"
+			"/workspaces/b2_base/apkg"
 		],		
 		"python.linting.pylintEnabled": true,
 		"python.linting.enabled": true
