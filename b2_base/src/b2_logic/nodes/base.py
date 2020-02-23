@@ -1,7 +1,5 @@
 from __future__ import print_function
 import threading
-import datetime as dt
-
 import rospy
 
 from roboclaw_driver.msg import Stats
@@ -51,7 +49,6 @@ class BaseNode:
         # Init Roboclaw stats state
         self._roboclaw_front_stats = None  # type: Stats
         # self._roboclaw_rear_stats = None  # type: Stats
-
 
         # Roboclaw encoder state
         self._m1_front_enc_prev = 0
