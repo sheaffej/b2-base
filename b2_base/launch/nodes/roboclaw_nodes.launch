@@ -7,18 +7,18 @@
     <arg name="test_mode"                   default="false"/>
 
     <include file="$(find roboclaw_driver)/launch/roboclaw.launch">
-        <arg name="name"            value="roboclaw_front"          />
-        <arg name="dev_name"        value="/dev/ttyACM0"            />
+        <arg name="name"            value="roboclaw_front" />
+        <arg name="dev_name"        value="/dev/ttyACM0,/dev/ttyACM1" />
         <arg name="speed_cmd_topic" value="/roboclaw/speed_command" />
-        <arg name="stats_topic"     value="roboclaw_front/stats"    />
-        <arg name="test_mode"       value="$(arg test_mode)"        />
+        <arg name="stats_topic"     value="roboclaw_front/stats" />
+        <arg name="test_mode"       value="$(arg test_mode)" />
     </include>
-    <include file="$(find roboclaw_driver)/launch/roboclaw.launch">
+    <!-- <include file="$(find roboclaw_driver)/launch/roboclaw.launch">
         <arg name="name"            value="roboclaw_rear"           />
         <arg name="dev_name"        value="/dev/ttyACM1"            />
         <arg name="speed_cmd_topic" value="/roboclaw/speed_command" />
         <arg name="stats_topic"     value="roboclaw_rear/stats"     />
         <arg name="test_mode"       value="$(arg test_mode)"        />
-    </include>
+    </include> -->
 
 </launch>

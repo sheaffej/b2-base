@@ -50,13 +50,14 @@ class BaseNode:
 
         # Init Roboclaw stats state
         self._roboclaw_front_stats = None  # type: Stats
-        self._roboclaw_rear_stats = None  # type: Stats
+        # self._roboclaw_rear_stats = None  # type: Stats
+
 
         # Roboclaw encoder state
         self._m1_front_enc_prev = 0
         self._m2_front_enc_prev = 0
-        self._m1_rear_enc_prev = 0
-        self._m2_rear_enc_prev = 0
+        # self._m1_rear_enc_prev = 0
+        # self._m2_rear_enc_prev = 0
 
         self._stats_lock = threading.RLock()  # To serialize access to the qpps stats
         self._cmd_vel_lock = threading.RLock()  # To serialize access to x/z command variables
@@ -72,9 +73,9 @@ class BaseNode:
         if self._roboclaw_front_stats is not None:
             self._m1_front_enc_prev = self._roboclaw_front_stats.m1_enc_val
             self._m2_front_enc_prev = self._roboclaw_front_stats.m2_enc_val
-        if self._roboclaw_rear_stats is not None:
-            self._m1_rear_enc_prev = self._roboclaw_rear_stats.m1_enc_val
-            self._m2_rear_enc_prev = self._roboclaw_rear_stats.m2_enc_val
+        # if self._roboclaw_rear_stats is not None:
+        #     self._m1_rear_enc_prev = self._roboclaw_rear_stats.m1_enc_val
+        #     self._m2_rear_enc_prev = self._roboclaw_rear_stats.m2_enc_val
         self._last_odom_time = rospy.get_rostime()
         self._last_cmd_vel_time = rospy.get_rostime()
 
@@ -148,7 +149,8 @@ class BaseNode:
         # Calculate and publish Odometry
         # -------------------------------
 
-        if self._roboclaw_front_stats is None or self._roboclaw_rear_stats is None:
+        # if self._roboclaw_front_stats is None or self._roboclaw_rear_stats is None:
+        if self._roboclaw_front_stats is None:
             rospy.loginfo("Insufficient roboclaw stats received, skipping odometry calculation")
             return
 
@@ -156,18 +158,20 @@ class BaseNode:
             # Calculate change in encoder readings
             m1_front_enc_diff = self._roboclaw_front_stats.m1_enc_val - self._m1_front_enc_prev
             m2_front_enc_diff = self._roboclaw_front_stats.m2_enc_val - self._m2_front_enc_prev
-            m1_rear_enc_diff = self._roboclaw_rear_stats.m1_enc_val - self._m1_rear_enc_prev
-            m2_rear_enc_diff = self._roboclaw_rear_stats.m2_enc_val - self._m2_rear_enc_prev
+            # m1_rear_enc_diff = self._roboclaw_rear_stats.m1_enc_val - self._m1_rear_enc_prev
+            # m2_rear_enc_diff = self._roboclaw_rear_stats.m2_enc_val - self._m2_rear_enc_prev
 
             self._m1_front_enc_prev = self._roboclaw_front_stats.m1_enc_val
             self._m2_front_enc_prev = self._roboclaw_front_stats.m2_enc_val
-            self._m1_rear_enc_prev = self._roboclaw_rear_stats.m1_enc_val
-            self._m2_rear_enc_prev = self._roboclaw_rear_stats.m2_enc_val
+            # self._m1_rear_enc_prev = self._roboclaw_rear_stats.m1_enc_val
+            # self._m2_rear_enc_prev = self._roboclaw_rear_stats.m2_enc_val
 
             # Since we have a two Roboclaw robot, take the average of the encoder diffs
             # from each Roboclaw for each side.
-            m1_enc_diff = (m1_front_enc_diff + m1_rear_enc_diff) / 2
-            m2_enc_diff = (m2_front_enc_diff + m2_rear_enc_diff) / 2
+            # m1_enc_diff = (m1_front_enc_diff + m1_rear_enc_diff) / 2
+            # m2_enc_diff = (m2_front_enc_diff + m2_rear_enc_diff) / 2
+            m1_enc_diff = m1_front_enc_diff
+            m2_enc_diff = m2_front_enc_diff
 
             # We take the nowtime from the Stats message so it matches the encoder values.
             # Otherwise we would get timing variances based on when the loop runs compared to
@@ -175,8 +179,9 @@ class BaseNode:
             # Since we have a two Roboclaw robot, take the latest stats timestamp from either
             # Roboclaw.
             front_stamp = self._roboclaw_front_stats.header.stamp
-            rear_stamp = self._roboclaw_rear_stats.header.stamp
-            nowtime = max(front_stamp, rear_stamp)
+            # rear_stamp = self._roboclaw_rear_stats.header.stamp
+            # nowtime = max(front_stamp, rear_stamp)
+            nowtime = front_stamp
 
         x_linear_v, y_linear_v, z_angular_v = calc_base_frame_velocity_from_encoder_diffs(
             m1_enc_diff, m2_enc_diff, self._ticks_per_rotation,
