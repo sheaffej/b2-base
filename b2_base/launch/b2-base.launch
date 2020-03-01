@@ -9,7 +9,9 @@
     <include file="$(find b2_base)/launch/nodes/roboclaw_nodes.launch">
         <arg name="test_mode"       value="$(arg test_mode)" />
     </include>
-    <include file="$(find b2_base)/launch/nodes/base_node.launch" />
+    <include file="$(find b2_base)/launch/nodes/base_node.launch">
+        <arg name="max_qpps"        value="2000" />
+    </include>
     <include file="$(find b2_base)/launch/nodes/sensors_node.launch">
         <arg name="test_mode"       value="$(arg test_mode)" />
     </include>
