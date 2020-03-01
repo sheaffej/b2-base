@@ -15,4 +15,5 @@ docker run -it --rm \
 --env ROS_MASTER_URI \
 --mount type=bind,source=$PROJ_DIR/b2-base,target=$CODE_MOUNT/b2-base \
 --mount type=bind,source=$PROJ_DIR/roboclaw_driver,target=$CODE_MOUNT/roboclaw_driver \
+--mount type=bind,source=$HOME/Downloads,target=/root/Downloads \
 ${DOCKER_IMAGE} $@
