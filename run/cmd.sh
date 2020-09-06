@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 DOCKER_IMAGE="sheaffej/b2-base"
-CONTAINER_NAME="shell-base_nodes"
 LABEL="b2"
 
 [ -z "$ROS_MASTER_URI" ] && echo "Please set ROS_MASTER_URI env" && exit 1
@@ -11,7 +10,6 @@ PROJ_DIR=$MYDIR/../..  # Directory containing the cloned git repos
 CODE_MOUNT="/workspaces"
 
 docker run -d --rm \
---name ${CONTAINER_NAME} \
 --label ${LABEL} \
 --net host \
 --privileged \
