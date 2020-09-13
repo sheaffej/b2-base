@@ -14,7 +14,7 @@
 		"python.autoComplete.extraPaths": [
 			"/ros/devel/lib/python2.7/dist-packages",
 			"/opt/ros/melodic/lib/python2.7/dist-packages",
-			"/workspaces/b2_base/apkg"
+			"/workspaces/b2-base/b2_base/src"
 		],		
 		"python.linting.pylintEnabled": true,
 		"python.linting.enabled": true

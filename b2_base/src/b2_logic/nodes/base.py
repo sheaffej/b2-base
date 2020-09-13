@@ -93,8 +93,8 @@ class BaseNode:
         with self._cmd_vel_lock:
 
             if ((self._last_cmd_vel_time - rospy.get_rostime()).to_sec() < 1.0
-                and msg.linear.x == self._x_linear_cmd
-                and msg.angular.z == self._z_angular_cmd):
+                    and msg.linear.x == self._x_linear_cmd
+                    and msg.angular.z == self._z_angular_cmd):
                 rospy.logdebug("Cmd Vel received, but no change in values")
 
             else:
