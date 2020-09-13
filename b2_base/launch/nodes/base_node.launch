@@ -21,6 +21,7 @@
     <arg name="speed_command_topic"         default="roboclaw/speed_command"/>
     <arg name="roboclaw_front_stats_topic"  default="roboclaw_front/stats"/>
     <arg name="roboclaw_rear_stats_topic"   default="roboclaw_rear/stats"/>
+    <arg name="log_level"                   default="info"/>
 
     <node name="base_node" pkg="b2_base" type="base_node.py">
         <param name="wheel_dist" type="double" value="$(arg wheel_dist)"/>
@@ -40,6 +41,7 @@
         <param name="speed_command_topic" type="str" value="$(arg speed_command_topic)"/>
         <param name="roboclaw_front_stats_topic" type="str" value="$(arg roboclaw_front_stats_topic)"/>
         <param name="roboclaw_rear_stats_topic" type="str" value="$(arg roboclaw_rear_stats_topic)"/>
+        <param name="log_level" type="str" value="$(arg log_level)"/>
     </node>
 
 </launch>

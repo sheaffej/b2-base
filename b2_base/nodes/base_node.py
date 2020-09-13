@@ -33,10 +33,21 @@ DEFAULT_MAX_DRIVE_SECS = 1
 DEFAULT_ODOM_FRAME_ID = "odom"
 DEFAULT_BASE_FRAME_ID = "base_link"
 DEFAULT_DEADMAN_SECS = 1
+DEFAULT_LOG_LEVEL = "info"
 
+def parse_log_level(levelstr):
+    map = {
+        "debug": rospy.DEBUG,
+        "info":  rospy.INFO,
+        "warn":  rospy.WARN,
+        "error": rospy.ERROR,
+        "fatal": rospy.FATAL
+    }
+    return map.get(levelstr.lower())
 
 if __name__ == "__main__":
-    rospy.init_node(DEFAULT_NODE_NAME, log_level=rospy.DEBUG)
+    log_level = parse_log_level(rospy.get_param("~log_level", DEFAULT_LOG_LEVEL))
+    rospy.init_node(DEFAULT_NODE_NAME, log_level=log_level)
     node_name = rospy.get_name()
 
     wheel_dist = rospy.get_param("~wheel_dist", DEFAULT_WHEEL_DIST)
