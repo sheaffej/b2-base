@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 from __future__ import print_function
 
+from math import pi as pi
+
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
 import rospy
@@ -29,11 +31,14 @@ DEFAULT_WHEEL_SLIP_FACTOR = 0.5  # Decimal % of angular motion lost to slip
 DEFAULT_TICKS_PER_ROTATION = 48 * 34
 DEFAULT_MAX_QPPS = 3700
 DEFAULT_MAX_ACCEL = 20000
+DEFAULT_MAX_X_LINEAR_VEL = 0.5      # meters/sec
+DEFAULT_MAX_Z_ANGULAR_VEL = pi / 2  # radians/sec
 DEFAULT_MAX_DRIVE_SECS = 1
 DEFAULT_ODOM_FRAME_ID = "odom"
 DEFAULT_BASE_FRAME_ID = "base_link"
 DEFAULT_DEADMAN_SECS = 1
 DEFAULT_LOG_LEVEL = "info"
+
 
 def parse_log_level(levelstr):
     map = {
@@ -57,6 +62,8 @@ if __name__ == "__main__":
     max_drive_secs = rospy.get_param("~max_drive_secs", DEFAULT_MAX_DRIVE_SECS)
     deadman_secs = rospy.get_param("~deadman_secs", DEFAULT_DEADMAN_SECS)
     max_qpps = rospy.get_param("~max_qpps", DEFAULT_MAX_QPPS)
+    max_x_lin_vel = rospy.get_param("~max_x_lin_vel", DEFAULT_MAX_X_LINEAR_VEL)
+    max_z_ang_vel = rospy.get_param("~max_z_ang_vel", DEFAULT_MAX_Z_ANGULAR_VEL)
     max_accel = rospy.get_param("~max_accel", DEFAULT_MAX_ACCEL)
     base_frame_id = rospy.get_param("~base_frame_id", DEFAULT_BASE_FRAME_ID)
     world_frame_id = rospy.get_param("~odom_frame_id", DEFAULT_ODOM_FRAME_ID)
@@ -76,7 +83,8 @@ if __name__ == "__main__":
     tf_broadcaster = tf.broadcaster.TransformBroadcaster()
 
     node = BaseNode(wheel_dist, wheel_radius, wheel_slip_factor, ticks_per_rotation,
-                    max_drive_secs, deadman_secs, max_qpps, max_accel,
+                    max_drive_secs, deadman_secs, 
+                    max_qpps, max_x_lin_vel, max_z_ang_vel, max_accel,
                     base_frame_id, world_frame_id,
                     speed_cmd_pub, odom_pub, tf_broadcaster)
 

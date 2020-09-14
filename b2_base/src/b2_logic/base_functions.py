@@ -49,9 +49,33 @@ def calc_create_speed_cmd(
     right_qpps_target = right_angular_v * ticks_per_radian
     left_qpps_target = left_angular_v * ticks_per_radian
 
-    # Clamp the target QPPS within the max_qpps
-    right_qpps_target = max(-max_qpps, min(right_qpps_target, max_qpps))
-    left_qpps_target = max(-max_qpps, min(left_qpps_target, max_qpps))
+    # Clamp and scale the target QPPS within the max_qpps
+    if abs(right_qpps_target) > max_qpps or abs(left_qpps_target) > max_qpps:
+
+        # Find the largest and smallest values
+        if abs(right_qpps_target) >= abs(left_qpps_target):
+            largest_qpps = right_qpps_target
+            smallest_qpps = left_qpps_target
+        else:
+            largest_qpps = left_qpps_target
+            smallest_qpps = right_qpps_target
+
+        # Find the ratio of the smallest to the largest
+        smallest_ratio = float(smallest_qpps) / largest_qpps
+
+        # Scale the largest by clamping it
+        largest_qpps_scaled = max(-max_qpps, min(largest_qpps, max_qpps))
+
+        # Scale the smallest
+        smallest_qpps_scaled = largest_qpps_scaled * smallest_ratio
+
+        # Reassign to the targets
+        if largest_qpps == right_qpps_target:
+            right_qpps_target = largest_qpps_scaled
+            left_qpps_target = smallest_qpps_scaled
+        else:
+            right_qpps_target = smallest_qpps_scaled
+            left_qpps_target = largest_qpps_scaled
 
     cmd = SpeedCommand()
     cmd.m1_qpps = right_qpps_target
