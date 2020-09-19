@@ -50,6 +50,7 @@ def parse_log_level(levelstr):
     }
     return map.get(levelstr.lower())
 
+
 if __name__ == "__main__":
     log_level = parse_log_level(rospy.get_param("~log_level", DEFAULT_LOG_LEVEL))
     rospy.init_node(DEFAULT_NODE_NAME, log_level=log_level)
@@ -83,7 +84,7 @@ if __name__ == "__main__":
     tf_broadcaster = tf.broadcaster.TransformBroadcaster()
 
     node = BaseNode(wheel_dist, wheel_radius, wheel_slip_factor, ticks_per_rotation,
-                    max_drive_secs, deadman_secs, 
+                    max_drive_secs, deadman_secs,
                     max_qpps, max_x_lin_vel, max_z_ang_vel, max_accel,
                     base_frame_id, world_frame_id,
                     speed_cmd_pub, odom_pub, tf_broadcaster)

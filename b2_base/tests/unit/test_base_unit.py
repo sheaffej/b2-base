@@ -2,7 +2,6 @@ import math
 import unittest
 
 import rospy
-from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Twist
 
 from b2_logic.nodes.base import BaseNode
@@ -16,11 +15,11 @@ NAME = 'b2_base_unittest'
 
 class MockSpeedCmdPub():
     # Motor speed in QPPS
-        # m1_qpps
-        # m2_qpps
+    #    m1_qpps
+    #    m2_qpps
 
     # Max seconds before automatically stopping
-        # max_secs
+    #    max_secs
     def __init__(self):
         self.msg = None
 
@@ -51,11 +50,13 @@ class TestBaseLoop(unittest.TestCase):
         print()
         wheel_dist = 0.220
         wheel_radius = 65 / 1000.0 / 2.0  # 65mm dia wheels
-        wheel_slip_factor = 0.5 # Decimal % of angular motion lost from wheel slip
+        wheel_slip_factor = 0.5  # Decimal % of angular motion lost from wheel slip
         ticks_per_rotation = 48 * 34
         max_drive_secs = 1
         deadman_secs = 1
         max_qpps = 3700
+        max_x_linear_vel = 0.5
+        max_z_angular_vel = math.pi/2
         max_accel = 10000
         base_frame_id = "base_link"
         world_frame_id = "world"
@@ -66,7 +67,8 @@ class TestBaseLoop(unittest.TestCase):
 
         self.base = BaseNode(
             wheel_dist, wheel_radius, wheel_slip_factor, ticks_per_rotation,
-            max_drive_secs, deadman_secs, max_qpps, max_accel,
+            max_drive_secs, deadman_secs,
+            max_qpps, max_x_linear_vel, max_z_angular_vel, max_accel,
             base_frame_id, world_frame_id,
             self.speed_cmd_pub, self.odom_pub, self.tf_broadcaster
         )
@@ -164,7 +166,8 @@ class TestBaseLoop(unittest.TestCase):
         print("-> Front stats: m1_enc_val: {}, m2_enc_val: {}, m1_enc_qpps: {}, "
               "m2_enc_qpps: {}, time {}".format(
                 stats_front.m1_enc_val, stats_front.m2_enc_val,
-                stats_front.m1_enc_qpps, stats_front.m2_enc_qpps, stats_front.header.stamp.to_sec()))
+                stats_front.m1_enc_qpps, stats_front.m2_enc_qpps,
+                stats_front.header.stamp.to_sec()))
         print("-> Rear stats: m1_enc_val: {}, m2_enc_val: {}, m1_enc_qpps: {}, "
               "m2_enc_qpps: {}, time {}".format(
                 stats_rear.m1_enc_val, stats_rear.m2_enc_val,
