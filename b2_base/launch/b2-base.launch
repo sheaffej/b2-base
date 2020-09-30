@@ -4,17 +4,19 @@
 -->
 <launch>
 
-    <arg name="test_mode"           default="false"     />
+    <arg name="test_mode"           default="false" />
+    <arg name="max_qpps"            default="3000" />
+    <arg name="odom_topic"          default="~odom" />
+    <arg name="publish_odom_tf"     default="false" />
 
     <include file="$(find b2_base)/launch/nodes/roboclaw_nodes.launch">
         <arg name="test_mode"       value="$(arg test_mode)" />
     </include>
 
     <include file="$(find b2_base)/launch/nodes/base_node.launch">
-        <arg name="max_qpps"        value="3000" />
+        <arg name="max_qpps"        value="$(arg max_qpps)" />
+        <arg name="odom_topic"      value="$(arg odom_topic)" />
+        <arg name="publish_odom_tf" value="$(arg publish_odom_tf)" />
     </include>
-    <!-- <include file="$(find b2_base)/launch/nodes/sensors_node.launch">
-        <arg name="test_mode"       value="$(arg test_mode)" />
-    </include> -->
 
 </launch>

@@ -15,6 +15,7 @@ while [ $# -gt 0 ]; do
     case $1 in
         "test")
             TEST="test_mode:=true"
+            TEST_LABEL="--label test"
             echo "Running in test mode"
             ;;
     esac
@@ -23,7 +24,7 @@ done
 
 docker run -d --rm \
 --name ${CONTAINER_NAME} \
---label ${LABEL} \
+--label ${LABEL} ${TEST_LABEL} \
 --net host \
 --privileged \
 --env DISPLAY \

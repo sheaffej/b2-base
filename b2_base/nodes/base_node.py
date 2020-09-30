@@ -35,6 +35,7 @@ DEFAULT_MAX_X_LINEAR_VEL = 0.5      # meters/sec
 DEFAULT_MAX_Z_ANGULAR_VEL = pi / 2  # radians/sec
 DEFAULT_MAX_DRIVE_SECS = 1
 DEFAULT_ODOM_FRAME_ID = "odom"
+DEFAULT_PUBLISH_ODOM_TF = True
 DEFAULT_BASE_FRAME_ID = "base_link"
 DEFAULT_DEADMAN_SECS = 1
 DEFAULT_LOG_LEVEL = "info"
@@ -69,6 +70,7 @@ if __name__ == "__main__":
     base_frame_id = rospy.get_param("~base_frame_id", DEFAULT_BASE_FRAME_ID)
     world_frame_id = rospy.get_param("~odom_frame_id", DEFAULT_ODOM_FRAME_ID)
     loop_hz = rospy.get_param("~loop_hz", DEFAULT_LOOP_HZ)
+    publish_odom_tf = rospy.get_param("~publish_odom_tf", DEFAULT_PUBLISH_ODOM_TF) 
 
     # Publishes
     speed_cmd_pub = rospy.Publisher(
@@ -81,13 +83,16 @@ if __name__ == "__main__":
         Odometry,
         queue_size=1
     )
-    tf_broadcaster = tf.broadcaster.TransformBroadcaster()
+    
+    tf_broadcaster = None
+    if publish_odom_tf:
+        tf_broadcaster = tf.broadcaster.TransformBroadcaster()
 
     node = BaseNode(wheel_dist, wheel_radius, wheel_slip_factor, ticks_per_rotation,
                     max_drive_secs, deadman_secs,
                     max_qpps, max_x_lin_vel, max_z_ang_vel, max_accel,
                     base_frame_id, world_frame_id,
-                    speed_cmd_pub, odom_pub, tf_broadcaster)
+                    speed_cmd_pub, odom_pub, publish_odom_tf, tf_broadcaster)
 
     # Twist message Subscriber
     rospy.Subscriber(

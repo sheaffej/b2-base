@@ -16,7 +16,7 @@ class BaseNode:
                  max_drive_secs, deadman_secs, 
                  max_qpps, max_x_lin_vel, max_z_ang_vel, max_accel,
                  base_frame_id, world_frame_id,
-                 speed_cmd_pub, odom_pub, tf_broadcaster):
+                 speed_cmd_pub, odom_pub, publish_odom_tf, tf_broadcaster):
 
         self._wheel_dist = wheel_dist
         self._wheel_radius = wheel_radius
@@ -33,6 +33,7 @@ class BaseNode:
 
         self._speed_cmd_pub = speed_cmd_pub
         self._odom_pub = odom_pub
+        self._publish_odom_tf = publish_odom_tf
         self._tf_broadcaster = tf_broadcaster
 
         # Init Twist command state
@@ -207,18 +208,19 @@ class BaseNode:
         # -----------------------------------------
         # Calculate and broacast tf transformation
         # -----------------------------------------
-        self._world_x = odom.pose.pose.position.x
-        self._world_y = odom.pose.pose.position.y
-        self._world_theta = yaw_from_odom_message(odom)
-        quat = odom.pose.pose.orientation
+        if self._publish_odom_tf:
+            self._world_x = odom.pose.pose.position.x
+            self._world_y = odom.pose.pose.position.y
+            self._world_theta = yaw_from_odom_message(odom)
+            quat = odom.pose.pose.orientation
 
-        self._tf_broadcaster.sendTransform(
-            (self._world_x, self._world_y, 0),
-            (quat.x, quat.y, quat.z, quat.w),
-            nowtime,
-            self._base_frame_id,
-            self._world_frame_id
-        )
+            self._tf_broadcaster.sendTransform(
+                (self._world_x, self._world_y, 0),
+                (quat.x, quat.y, quat.z, quat.w),
+                nowtime,
+                self._base_frame_id,
+                self._world_frame_id
+            )
 
         self._last_odom_time = nowtime
 
